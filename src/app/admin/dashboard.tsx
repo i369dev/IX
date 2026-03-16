@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Clapperboard, Disc, Info, Link, Star, Trash, Type } from 'lucide-react';
+import { Clapperboard, Disc, Info, Link, LogOut, Star, Trash, Type } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -34,6 +34,7 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
+  SidebarFooter,
 } from '@/components/ui/sidebar';
 
 const trackSchema = z.object({
@@ -169,7 +170,6 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-background text-foreground">
         <Sidebar>
           <SidebarHeader>
              <h2 className="text-lg font-semibold px-2">Sections</h2>
@@ -208,18 +208,24 @@ export default function Dashboard() {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
+          <SidebarFooter>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton onClick={() => signOut(auth)}>
+                        <LogOut /> Sign Out
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
         </Sidebar>
-        <SidebarInset>
-          <div className="p-4 md:p-8">
-            <header className="flex justify-between items-center mb-8">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-              </div>
-              <Button variant="outline" onClick={() => signOut(auth)}>Sign Out</Button>
+        <SidebarInset className="bg-background text-foreground">
+          <div className="p-4 sm:p-6 md:p-8">
+            <header className="flex items-center mb-8">
+              <SidebarTrigger className="md:hidden mr-4" />
+              <h1 className="text-3xl font-bold">Admin Dashboard</h1>
             </header>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
                 
                 <Card id="hero">
                   <CardHeader>
@@ -333,7 +339,7 @@ export default function Dashboard() {
                             <FormField
                               control={form.control}
                               name={`releases.tracks.${index}.duration`}
-                              render={({ field }) => <Input placeholder="Duration" {...field} />}
+                              render={({ field }) => <Input placeholder="Duration" className="w-28" {...field} />}
                             />
                             <Button type="button" variant="ghost" size="icon" onClick={() => removeTrack(index)}>
                               <Trash className="h-4 w-4" />
@@ -345,7 +351,7 @@ export default function Dashboard() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="mt-2"
+                        className="mt-4"
                         onClick={() => appendTrack({ name: '', duration: '' })}
                       >
                         Add Track
@@ -418,7 +424,7 @@ export default function Dashboard() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="mt-2"
+                        className="mt-4"
                         onClick={() => appendLink({ icon: '', url: '#' })}
                       >
                         Add Link
@@ -450,12 +456,11 @@ export default function Dashboard() {
                 
                 <Separator />
 
-                <Button type="submit" size="lg">Save All Changes</Button>
+                <Button type="submit" size="lg" className="w-full sm:w-auto">Save All Changes</Button>
               </form>
             </Form>
           </div>
         </SidebarInset>
-      </div>
     </SidebarProvider>
   );
 }
