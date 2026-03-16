@@ -29,6 +29,13 @@
     --input: 217 33% 17%;
     --ring: 217 91% 60%;
     --radius: 0.5rem;
+
+    --sidebar-background: 210 4% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-accent: 155 40% 25%;
+    --sidebar-accent-foreground: 155 60% 85%;
+    --sidebar-ring: 217 91% 60%;
 }
 
 .dark {
@@ -51,6 +58,13 @@
     --border: 217 33% 17%;
     --input: 217 33% 17%;
     --ring: 217 91% 60%;
+
+    --sidebar-background: 210 4% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-accent: 155 40% 25%;
+    --sidebar-accent-foreground: 155 60% 85%;
+    --sidebar-ring: 217 91% 60%;
 }
 
 @layer base {
@@ -71,6 +85,9 @@
         overscroll-behavior: none;
         -ms-overflow-style: none;
         scrollbar-width: none;
+    }
+    body:not(.main-page-cursor) {
+        cursor: default !important;
     }
     h1, h2, .hero-title, .hero-subtitle {
         font-family: 'Syne', sans-serif;

@@ -211,6 +211,7 @@ export default function Dashboard() {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
+          <SidebarSeparator />
           <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
