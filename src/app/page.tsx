@@ -50,7 +50,7 @@ export default function Home() {
         () => (firestore ? doc(firestore, 'content', 'landingPage') : null),
         [firestore]
     );
-    const { data: pageContent, loading: contentLoading } = useDoc(contentRef);
+    const { data: pageContent } = useDoc(contentRef);
 
     const content = pageContent || defaultContent;
 
@@ -842,10 +842,6 @@ export default function Home() {
         }
     }, []);
 
-    if (contentLoading && !pageContent) {
-        return null; // Prevent flash of default content while loading
-    }
-    
     return (
         <>
             <div className="cursor-dot" ref={cursorDotRef}></div>
