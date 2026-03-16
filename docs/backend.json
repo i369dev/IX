@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "landingPage": {
+      "title": "Landing Page Content",
+      "description": "All editable content for the main landing page.",
+      "type": "object",
+      "properties": {
+        "hero": {
+          "type": "object",
+          "description": "Hero section content.",
+          "properties": {
+            "title": { "type": "string" },
+            "subtitle": { "type": "string" }
+          },
+          "required": ["title", "subtitle"]
+        },
+        "about": {
+          "type": "object",
+          "description": "About section content.",
+          "properties": {
+            "title": { "type": "string" },
+            "p1": { "type": "string" },
+            "p2": { "type": "string" }
+          },
+          "required": ["title", "p1", "p2"]
+        },
+        "releases": {
+          "type": "object",
+          "description": "Releases section content.",
+          "properties": {
+            "title": { "type": "string" },
+            "tracks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "duration": { "type": "string" }
+                },
+                "required": ["name", "duration"]
+              }
+            }
+          },
+          "required": ["title", "tracks"]
+        },
+        "live": {
+            "type": "object",
+            "description": "Live session content.",
+            "properties": {
+                "title": { "type": "string" }
+            },
+            "required": ["title"]
+        },
+        "connect": {
+          "type": "object",
+          "description": "Connect section content.",
+          "properties": {
+            "title": { "type": "string" },
+            "links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "icon": { "type": "string" },
+                  "url": { "type": "string", "format": "uri" }
+                },
+                "required": ["icon", "url"]
+              }
+            }
+          },
+          "required": ["title", "links"]
+        },
+        "footer": {
+            "type": "object",
+            "description": "Footer content.",
+            "properties": {
+                "text": { "type": "string" }
+            },
+            "required": ["text"]
+        }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["email-password"]
+  },
+  "firestore": {
+    "/content/{contentId}": {
+      "schema": { "$ref": "#/entities/landingPage" },
+      "description": "Stores the dynamic content for the website."
+    }
+  }
+}

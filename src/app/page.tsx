@@ -1,12 +1,59 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
+import { doc } from 'firebase/firestore';
+import { useFirestore, useDoc } from '@/firebase';
+
+const defaultContent = {
+  hero: {
+    title: 'InhaleXheale',
+    subtitle: 'Organic Frequencies & Deep Melodies',
+  },
+  about: {
+    title: 'Baare Mein',
+    p1: 'Breath and sound combined. A journey through organic textures and dark, meditative spaces.',
+    p2: 'Every frequency is a breath. Every silence is a void. Heal with the Neon Emerald light.',
+  },
+  releases: {
+    title: 'Naye Releases',
+    tracks: [
+      { name: '1. Neon Emerald', duration: '04:12' },
+      { name: '2. Deep Melodies', duration: '05:45' },
+      { name: '3. Inhale', duration: '03:30' },
+      { name: '4. Exhale', duration: '06:20' },
+    ],
+  },
+  live: {
+    title: 'Live Session',
+  },
+  connect: {
+    title: 'Judein',
+    links: [
+      { icon: 'fab fa-spotify', url: '#' },
+      { icon: 'fab fa-soundcloud', url: '#' },
+      { icon: 'fab fa-instagram', url: '#' },
+      { icon: 'fab fa-youtube', url: '#' },
+    ],
+  },
+  footer: {
+    text: '© 2026 InhaleXheale. All rights reserved.',
+  },
+};
 
 export default function Home() {
+    const firestore = useFirestore();
+    const contentRef = useMemo(
+        () => (firestore ? doc(firestore, 'content', 'landingPage') : null),
+        [firestore]
+    );
+    const { data: pageContent, loading: contentLoading } = useDoc(contentRef);
+
+    const content = pageContent || defaultContent;
+
     const cursorDotRef = useRef<HTMLDivElement>(null);
     const cursorFollowerRef = useRef<HTMLDivElement>(null);
     const preloaderGridRef = useRef<HTMLDivElement>(null);
@@ -795,6 +842,10 @@ export default function Home() {
         }
     }, []);
 
+    if (contentLoading && !pageContent) {
+        return null; // Prevent flash of default content while loading
+    }
+    
     return (
         <>
             <div className="cursor-dot" ref={cursorDotRef}></div>
@@ -811,8 +862,8 @@ export default function Home() {
             <div id="main-content" ref={mainContentRef}>
                 <section className="hero-section">
                     <div className="breathe-element hero-content">
-                        <h1 className="hero-title">InhaleXheale</h1>
-                        <div className="hero-subtitle">Organic Frequencies & Deep Melodies</div>
+                        <h1 className="hero-title">{content.hero.title}</h1>
+                        <div className="hero-subtitle">{content.hero.subtitle}</div>
                         
                         <div className="scroll-indicator">
                             <div className="scroll-line"></div>
@@ -824,9 +875,9 @@ export default function Home() {
 
                 <section>
                     <div className="breathe-element">
-                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>Baare Mein</h2>
-                        <p>Breath and sound combined. A journey through organic textures and dark, meditative spaces.</p>
-                        <p>Every frequency is a breath. Every silence is a void. Heal with the Neon Emerald light.</p>
+                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.about.title}</h2>
+                        <p>{content.about.p1}</p>
+                        <p>{content.about.p2}</p>
                     </div>
                 </section>
 
@@ -834,12 +885,11 @@ export default function Home() {
 
                 <section>
                     <div className="breathe-element" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>Naye Releases</h2>
+                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.releases.title}</h2>
                         <ul className="track-list">
-                            <li className="track-item"><span>1. Neon Emerald</span> <span>04:12</span></li>
-                            <li className="track-item"><span>2. Deep Melodies</span> <span>05:45</span></li>
-                            <li className="track-item"><span>3. Inhale</span> <span>03:30</span></li>
-                            <li className="track-item"><span>4. Exhale</span> <span>06:20</span></li>
+                            {content.releases.tracks.map((track, index) => (
+                                <li key={index} className="track-item"><span>{track.name}</span> <span>{track.duration}</span></li>
+                            ))}
                         </ul>
                     </div>
                 </section>
@@ -848,7 +898,7 @@ export default function Home() {
 
                 <section>
                     <div className="breathe-element" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <h2 style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>Live Session</h2>
+                        <h2 style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.live.title}</h2>
                         <div className="video-wrapper">
                             <div className="video-placeholder" style={{background: 'radial-gradient(circle at center, var(--surface-color) 0%, var(--bg-color) 100%)'}}></div>
                         </div>
@@ -859,18 +909,17 @@ export default function Home() {
                 
                 <section style={{minHeight: '50vh'}}>
                     <div className="breathe-element">
-                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>Judein</h2>
+                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.connect.title}</h2>
                         <div className="social-links">
-                            <a href="#" target="_blank" rel="noopener noreferrer"><i className="fab fa-spotify"></i></a>
-                            <a href="#" target="_blank" rel="noopener noreferrer"><i className="fab fa-soundcloud"></i></a>
-                            <a href="#" target="_blank" rel="noopener noreferrer"><i className="fab fa-instagram"></i></a>
-                            <a href="#" target="_blank" rel="noopener noreferrer"><i className="fab fa-youtube"></i></a>
+                            {content.connect.links.map((link, index) => (
+                                <a key={index} href={link.url} target="_blank" rel="noopener noreferrer"><i className={link.icon}></i></a>
+                            ))}
                         </div>
                     </div>
                 </section>
 
                 <footer>
-                    © 2026 InhaleXheale. All rights reserved.
+                    {content.footer.text}
                 </footer>
             </div>
         </>
