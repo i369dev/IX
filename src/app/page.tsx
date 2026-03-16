@@ -63,6 +63,9 @@ export default function Home() {
     const preloaderRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        const body = document.body;
+        body.style.cursor = 'none';
+
         // Jawsaña (Audio Setup)
         const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
         
@@ -463,7 +466,7 @@ export default function Home() {
         const raycaster = new THREE.Raycaster();
 
         // Uñacht'aya (Render Loop)
-        gsap.ticker.add((time) => {
+        const renderLoop = (time: number) => {
             if (!shipFired) {
                 shipGroup.position.y = Math.sin(time * 2) * 0.15;
                 gsap.to(shipGroup.rotation, {
@@ -509,7 +512,8 @@ export default function Home() {
             }
             ixGroup.rotation.z = Math.sin(time * 0.5) * 0.05;
             renderer.render(scene, camera);
-        });
+        };
+        gsap.ticker.add(renderLoop);
 
         const handleResize = () => {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -832,13 +836,14 @@ export default function Home() {
         }
 
         return () => {
+            body.style.cursor = 'default';
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('click', handleClick);
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('deviceorientation', handleOrientation);
-            gsap.ticker.remove((time) => {});
+            gsap.ticker.remove(renderLoop);
         }
     }, []);
 

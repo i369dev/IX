@@ -157,7 +157,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 md:p-8" style={{ cursor: 'default' }}>
+    <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <Button variant="outline" onClick={() => signOut(auth)}>Sign Out</Button>

@@ -43,7 +43,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-background" style={{ cursor: 'default' }}>
+    <div className="flex h-screen w-full items-center justify-center bg-background">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Admin Login</CardTitle>
