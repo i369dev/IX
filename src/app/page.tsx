@@ -64,7 +64,17 @@ export default function Home() {
 
     useEffect(() => {
         const body = document.body;
-        body.style.cursor = 'none';
+        body.classList.add('main-page-cursor');
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        const lenis = new Lenis({
+            duration: 1.5,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothTouch: true,
+            touchMultiplier: 2,
+        });
+        lenis.stop();
 
         // Jawsaña (Audio Setup)
         const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -188,22 +198,6 @@ export default function Home() {
             el.addEventListener('mouseenter', mouseEnterHandler);
             el.addEventListener('mouseleave', mouseLeaveHandler);
         });
-
-        // Sarnaqawi Lenis
-        const lenis = new Lenis({
-            duration: 1.5,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smooth: true,
-            smoothTouch: true, 
-            touchMultiplier: 2 
-        });
-
-        function raf(time: number) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-        lenis.stop(); 
 
         // 3D Canvas
         const canvas = canvasRef.current;
@@ -465,8 +459,13 @@ export default function Home() {
 
         const raycaster = new THREE.Raycaster();
 
+        // Sync Lenis and GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+
         // Uñacht'aya (Render Loop)
         const renderLoop = (time: number) => {
+            lenis.raf(time * 1000); // Sync lenis
+
             if (!shipFired) {
                 shipGroup.position.y = Math.sin(time * 2) * 0.15;
                 gsap.to(shipGroup.rotation, {
@@ -492,7 +491,7 @@ export default function Home() {
                 } else {
                     if(isHoveringShip) {
                         isHoveringShip = false;
-                        if (document.body) document.body.style.cursor = 'none';
+                        if (document.body) document.body.classList.add('main-page-cursor');
                         gsap.to(cursorFollower, { width: 30, height: 30, backgroundColor: 'transparent', borderColor: 'rgba(255, 255, 255, 0.4)', duration: 0.3 });
                     }
                 }
@@ -514,6 +513,8 @@ export default function Home() {
             renderer.render(scene, camera);
         };
         gsap.ticker.add(renderLoop);
+        gsap.ticker.lagSmoothing(0);
+
 
         const handleResize = () => {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -615,7 +616,7 @@ export default function Home() {
 
             shipFired = true;
             isLaunching = true;
-            if (document.body) document.body.style.cursor = 'none';
+            if (document.body) document.body.classList.remove('main-page-cursor');
             gsap.to([cursorDot, cursorFollower], { opacity: 0, duration: 0.2 });
             
             // Jank'aki sarnaqaña (Speed up existing lines to hyperdrive)
@@ -697,6 +698,7 @@ export default function Home() {
                 ease: "power2.inOut",
                 onComplete: () => {
                     if (preloader) preloader.style.display = 'none';
+                    if (document.body) document.body.classList.add('main-page-cursor');
                     gsap.to([cursorDot, cursorFollower], { opacity: 1, duration: 0.5 }); 
                 }
             }, 3.5);
@@ -744,9 +746,6 @@ export default function Home() {
             gsap.to(cursorFollower, { x: mouseX, y: mouseY, duration: 0.6, ease: "power3.out" });
         };
         window.addEventListener('touchmove', handleTouchMove, {passive: false});
-
-        // Scroll Sarnaqawi
-        gsap.registerPlugin(ScrollTrigger);
 
         function initScrollAnimations() {
             gsap.to('.scroll-indicator', {
@@ -836,7 +835,7 @@ export default function Home() {
         }
 
         return () => {
-            body.style.cursor = 'default';
+            body.classList.remove('main-page-cursor');
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('click', handleClick);
@@ -844,6 +843,7 @@ export default function Home() {
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('deviceorientation', handleOrientation);
             gsap.ticker.remove(renderLoop);
+            lenis.destroy();
         }
     }, []);
 
