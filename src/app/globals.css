@@ -2,83 +2,346 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 195 23% 95%;
-    --foreground: 0 0% 3.9%;
-    --card: 195 23% 95%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 195 23% 95%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 190 39% 39%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 190 39% 39%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+/* Samikana */
+:root {
+    --bg-color: #030406;
+    --surface-color: #0a0c10;
+    --text-main: #f0f4f8;
+    --text-muted: #8b9bb4;
+    --accent-glow: #00FF9D;
+    --background: 30 10% 4%;
+    --foreground: 210 40% 98%;
+    --card: 210 4% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20% 65%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 217 91% 60%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-  .dark {
-    --background: 200 15% 8%;
-    --foreground: 0 0% 98%;
-    --card: 200 15% 8%;
-    --card-foreground: 0 0% 98%;
-    --popover: 200 15% 8%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 190 39% 50%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 190 39% 50%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+}
+
+.dark {
+    --background: 30 10% 4%;
+    --foreground: 210 40% 98%;
+    --card: 210 4% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20% 65%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 217 91% 60%;
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+    * {
+        @apply border-border;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        cursor: none;
+    }
+    body, html {
+        @apply bg-background text-foreground;
+        width: 100%;
+        font-family: 'Outfit', Arial, sans-serif;
+        overflow-x: hidden;
+        overscroll-behavior: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    h1, h2, .hero-title, .hero-subtitle {
+        font-family: 'Syne', sans-serif;
+    }
+    /* Scrollbar imaña */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* Uñch'ukiña */
+.cursor-dot, .cursor-follower {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 9999;
+    pointer-events: none;
+}
+.cursor-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent-glow);
+}
+.cursor-follower {
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: width 0.3s, height 0.3s, background-color 0.3s;
+}
+
+/* Qalltawi */
+#preloader {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100vh;
+    background-color: transparent;
+    z-index: 9000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Uñstayawi qhana grid */
+#preloader-grid {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+/* Qhant'at siqina (Colors now handled by JS for tunnel effect) */
+.bg-falling-line {
+    position: absolute;
+    height: 2px;
+    opacity: 0;
+    will-change: transform, opacity;
+    border-radius: 2px;
+}
+
+/* Qhant'at qullu */
+.glowing-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--text-main);
+    border-radius: 50%;
+    box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    position: absolute;
+    transform: scale(0);
+    pointer-events: none;
+    z-index: 9005;
+}
+
+/* 3D Canvas */
+#webgl-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Jach'a amta */
+#main-content {
+    position: relative;
+    z-index: 10;
+    opacity: 0;
+    display: none;
+}
+
+section {
+    min-height: 100dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5% 10%;
+    text-align: center;
+}
+
+/* Jach'a qhana */
+.hero-section {
+    height: 100dvh;
+    justify-content: flex-end;
+    padding-bottom: 0;
+}
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.hero-title {
+    font-size: clamp(1.5rem, 9vw, 8rem);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 30px rgba(0, 255, 157, 0.1);
+    white-space: nowrap;
+    text-transform: none;
+}
+
+.hero-subtitle {
+    font-size: clamp(0.7rem, 3vw, 1rem);
+    letter-spacing: 0.3em;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.breathe-element {
+    will-change: transform, opacity;
+}
+
+p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    max-width: 600px;
+    color: var(--text-muted);
+    margin: 20px auto;
+    font-weight: 300;
+}
+
+/* Uñch'ukiña Video */
+.video-wrapper {
+    width: 100%;
+    max-width: 1000px;
+    aspect-ratio: 16/9;
+    background: #111;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    filter: blur(15px);
+    transform: scale(0.95);
+    transition: filter 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.video-wrapper:hover {
+    filter: blur(0px);
+    transform: scale(1.02);
+}
+
+.video-wrapper::before {
+    content: "LIVE SESSION [HOVER TO FOCUS]";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.2em;
+    font-size: 1.2rem;
+    z-index: 2;
+    font-family: 'Syne', sans-serif;
+    pointer-events: none;
+    transition: opacity 0.5s;
+}
+.video-wrapper:hover::before {
+    opacity: 0;
+}
+
+.video-placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+    background-color: var(--surface-color);
+}
+
+/* Jayllinaka */
+.track-list {
+    list-style: none;
+    padding: 0;
+    margin: 40px 0;
+    width: 100%;
+    max-width: 600px;
+}
+.track-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    transition: color 0.3s;
+}
+.track-item:hover {
+    color: var(--accent-glow);
+}
+
+/* Tupunaka */
+.social-links {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+    justify-content: center;
+}
+.social-links a {
+    color: var(--text-muted);
+    font-size: 2rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+.social-links a:hover {
+    color: var(--accent-glow);
+    transform: scale(1.1) translateY(-5px);
+}
+
+footer {
+    padding: 50px;
+    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.spacer {
+    height: 30vh;
+}
+
+/* Scroll Uñacht'aya */
+.scroll-indicator {
+    margin-top: 40px;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.8;
+}
+.scroll-line {
+    width: 1px;
+    height: 12vh;
+    background: linear-gradient(to bottom, var(--accent-glow), transparent);
+    animation: scrollLine 2.5s infinite cubic-bezier(0.65, 0, 0.35, 1);
+    transform-origin: top;
+}
+@keyframes scrollLine {
+    0% { transform: scaleY(0); opacity: 0; transform-origin: top; }
+    50% { transform: scaleY(1); opacity: 1; transform-origin: top; }
+    50.1% { transform-origin: bottom; }
+    100% { transform: scaleY(0); opacity: 0; transform-origin: bottom; }
 }
