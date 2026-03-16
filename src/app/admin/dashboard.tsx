@@ -19,11 +19,22 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Trash } from 'lucide-react';
+import { Clapperboard, Disc, Info, Link, Star, Trash, Type } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { getAuth, signOut } from 'firebase/auth';
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarInset,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 
 const trackSchema = z.object({
   name: z.string().min(1, 'Track name is required.'),
@@ -157,252 +168,294 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
-      <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <Button variant="outline" onClick={() => signOut(auth)}>Sign Out</Button>
-      </header>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          
-          {/* Hero Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Hero Section</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="hero.title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="hero.subtitle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Subtitle</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-          
-          {/* About Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>About Section</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="about.title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="about.p1"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Paragraph 1</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="about.p2"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Paragraph 2</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
+    <SidebarProvider>
+      <div className="min-h-screen bg-background text-foreground">
+        <Sidebar>
+          <SidebarHeader>
+             <h2 className="text-lg font-semibold px-2">Sections</h2>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="#hero"><Star /> Hero</a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="#about"><Info /> About</a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="#releases"><Disc /> Releases</a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="#live"><Clapperboard /> Live Session</a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="#connect"><Link /> Connect</a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="#footer"><Type /> Footer</a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarContent>
+        </Sidebar>
+        <SidebarInset>
+          <div className="p-4 md:p-8">
+            <header className="flex justify-between items-center mb-8">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger />
+                <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+              </div>
+              <Button variant="outline" onClick={() => signOut(auth)}>Sign Out</Button>
+            </header>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                
+                <Card id="hero">
+                  <CardHeader>
+                    <CardTitle>Hero Section</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="hero.title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="hero.subtitle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Subtitle</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+                
+                <Card id="about">
+                  <CardHeader>
+                    <CardTitle>About Section</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="about.title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="about.p1"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Paragraph 1</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="about.p2"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Paragraph 2</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
 
-          {/* Releases Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Releases Section</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="releases.title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div>
-                <FormLabel>Tracks</FormLabel>
-                <div className="space-y-2 mt-2">
-                  {trackFields.map((field, index) => (
-                    <div key={field.id} className="flex items-center gap-2">
-                      <FormField
-                        control={form.control}
-                        name={`releases.tracks.${index}.name`}
-                        render={({ field }) => <Input placeholder="Track Name" {...field} />}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`releases.tracks.${index}.duration`}
-                        render={({ field }) => <Input placeholder="Duration" {...field} />}
-                      />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => removeTrack(index)}>
-                        <Trash className="h-4 w-4" />
+                <Card id="releases">
+                  <CardHeader>
+                    <CardTitle>Releases Section</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="releases.title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div>
+                      <FormLabel>Tracks</FormLabel>
+                      <div className="space-y-2 mt-2">
+                        {trackFields.map((field, index) => (
+                          <div key={field.id} className="flex items-center gap-2">
+                            <FormField
+                              control={form.control}
+                              name={`releases.tracks.${index}.name`}
+                              render={({ field }) => <Input placeholder="Track Name" {...field} />}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`releases.tracks.${index}.duration`}
+                              render={({ field }) => <Input placeholder="Duration" {...field} />}
+                            />
+                            <Button type="button" variant="ghost" size="icon" onClick={() => removeTrack(index)}>
+                              <Trash className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => appendTrack({ name: '', duration: '' })}
+                      >
+                        Add Track
                       </Button>
                     </div>
-                  ))}
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
-                  onClick={() => appendTrack({ name: '', duration: '' })}
-                >
-                  Add Track
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  </CardContent>
+                </Card>
 
-          {/* Live Session Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Live Session</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="live.title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
+                <Card id="live">
+                  <CardHeader>
+                    <CardTitle>Live Session</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="live.title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
 
-          {/* Connect Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Connect Section</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="connect.title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div>
-                <FormLabel>Social Links</FormLabel>
-                <div className="space-y-2 mt-2">
-                  {linkFields.map((field, index) => (
-                    <div key={field.id} className="flex items-center gap-2">
-                      <FormField
-                        control={form.control}
-                        name={`connect.links.${index}.icon`}
-                        render={({ field }) => <Input placeholder="Font Awesome Class (e.g. fab fa-spotify)" {...field} />}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`connect.links.${index}.url`}
-                        render={({ field }) => <Input placeholder="URL" {...field} />}
-                      />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => removeLink(index)}>
-                        <Trash className="h-4 w-4" />
+                <Card id="connect">
+                  <CardHeader>
+                    <CardTitle>Connect Section</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="connect.title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div>
+                      <FormLabel>Social Links</FormLabel>
+                      <div className="space-y-2 mt-2">
+                        {linkFields.map((field, index) => (
+                          <div key={field.id} className="flex items-center gap-2">
+                            <FormField
+                              control={form.control}
+                              name={`connect.links.${index}.icon`}
+                              render={({ field }) => <Input placeholder="Font Awesome Class (e.g. fab fa-spotify)" {...field} />}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`connect.links.${index}.url`}
+                              render={({ field }) => <Input placeholder="URL" {...field} />}
+                            />
+                            <Button type="button" variant="ghost" size="icon" onClick={() => removeLink(index)}>
+                              <Trash className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => appendLink({ icon: '', url: '#' })}
+                      >
+                        Add Link
                       </Button>
                     </div>
-                  ))}
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
-                  onClick={() => appendLink({ icon: '', url: '#' })}
-                >
-                  Add Link
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Footer Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Footer Section</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="footer.text"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Footer Text</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-          
-          <Separator />
+                  </CardContent>
+                </Card>
+                
+                <Card id="footer">
+                  <CardHeader>
+                    <CardTitle>Footer Section</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="footer.text"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Footer Text</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+                
+                <Separator />
 
-          <Button type="submit" size="lg">Save All Changes</Button>
-        </form>
-      </Form>
-    </div>
+                <Button type="submit" size="lg">Save All Changes</Button>
+              </form>
+            </Form>
+          </div>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 }
