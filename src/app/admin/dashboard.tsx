@@ -165,7 +165,17 @@ export default function Dashboard() {
       return;
     }
 
-    const storage = getStorage(app);
+    const storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+    if (!storageBucket) {
+      toast({
+        variant: 'destructive',
+        title: 'Configuration Error',
+        description: 'Firebase Storage bucket is not defined. Please set NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET in your environment.',
+      });
+      return;
+    }
+
+    const storage = getStorage(app, `gs://${storageBucket}`);
     const videoStorageRef = storageRef(storage, `live-session/video-${Date.now()}-${selectedFile.name}`);
     const uploadTask = uploadBytesResumable(videoStorageRef, selectedFile);
 
