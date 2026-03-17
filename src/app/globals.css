@@ -361,3 +361,5 @@ footer {
     50.1% { transform-origin: bottom; }
     100% { transform: scaleY(0); opacity: 0; transform-origin: bottom; }
 }
+
+    

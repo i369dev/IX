@@ -322,7 +322,7 @@ export function useInteractiveCanvas({
 
         function launchShip() {
             if (!mainContent || !preloader || !glowDot || shipFired) return;
-            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchstart', handleTouchStart, { passive: false } as AddEventListenerOptions);
             shipFired = true;
             if (prefersReducedMotion) {
                 showMainContent();
@@ -371,9 +371,18 @@ export function useInteractiveCanvas({
         window.addEventListener('click', handleClick);
 
         const handleTouchStart = (e: TouchEvent) => {
-            if (shipFired) return;
+            if (shipFired) {
+                window.removeEventListener('touchstart', handleTouchStart, { passive: false } as AddEventListenerOptions);
+                return;
+            };
+
+            if (e.touches.length > 1) {
+                return; // Ignore multi-touch gestures like pinch-zoom
+            }
+        
             const touchX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
             const touchY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+            
             raycaster.setFromCamera({x: touchX, y: touchY}, camera);
             if (raycaster.intersectObject(hitbox).length > 0) {
                 launchShip();
@@ -415,3 +424,5 @@ export function useInteractiveCanvas({
         }
     }, [canvasRef, cursorDotRef, cursorFollowerRef, preloaderGridRef, glowDotRef, mainContentRef, preloaderRef, playInhale, playExhale]);
 }
+
+    
