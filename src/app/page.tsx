@@ -732,21 +732,6 @@ export default function Home() {
         };
         window.addEventListener('touchstart', handleTouchStart, {passive: false});
 
-        // Screen var bot firavlyas disha badalna (Update look direction on drag)
-        const handleTouchMove = (e: TouchEvent) => {
-            if (shipFired) return;
-            lastTouchTime = Date.now();
-            
-            mouseNormX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-            mouseNormY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-            mouseX = e.touches[0].clientX;
-            mouseY = e.touches[0].clientY;
-            
-            gsap.to(cursorDot, { x: mouseX, y: mouseY, duration: 0.1, ease: "power2.out" });
-            gsap.to(cursorFollower, { x: mouseX, y: mouseY, duration: 0.6, ease: "power3.out" });
-        };
-        window.addEventListener('touchmove', handleTouchMove, {passive: false});
-
         function initScrollAnimations() {
             gsap.to('.scroll-indicator', {
                 opacity: 0,
@@ -840,7 +825,6 @@ export default function Home() {
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('click', handleClick);
             window.removeEventListener('touchstart', handleTouchStart);
-            window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('deviceorientation', handleOrientation);
             gsap.ticker.remove(renderLoop);
             lenis.destroy();
