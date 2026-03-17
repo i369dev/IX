@@ -128,6 +128,9 @@ const SidebarProvider = React.forwardRef<
       }),
       [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
     )
+    
+    // The component might receive Next.js page props that shouldn't be passed to a div
+    const { params: _params, searchParams: _searchParams, ...rest } = props as any;
 
     return (
       <SidebarContext.Provider value={contextValue}>
@@ -145,7 +148,7 @@ const SidebarProvider = React.forwardRef<
               className
             )}
             ref={ref}
-            {...props}
+            {...rest}
           >
             {children}
           </div>
