@@ -28,6 +28,7 @@ const defaultContent = {
   },
   live: {
     title: 'Live Session',
+    videoUrl: '',
   },
   connect: {
     title: 'Judein',
@@ -130,7 +131,18 @@ export default function Home() {
                     <div className="breathe-element" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                         <h2 style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.live.title}</h2>
                         <div className="video-wrapper">
-                            <div className="video-placeholder" style={{background: 'radial-gradient(circle at center, var(--surface-color) 0%, var(--bg-color) 100%)'}}></div>
+                           {content.live.videoUrl ? (
+                                <video 
+                                    key={content.live.videoUrl}
+                                    controls 
+                                    className="video-placeholder"
+                                >
+                                    <source src={content.live.videoUrl} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            ) : (
+                                <div className="video-placeholder" style={{background: 'radial-gradient(circle at center, var(--surface-color) 0%, var(--bg-color) 100%)'}}></div>
+                            )}
                         </div>
                     </div>
                 </section>

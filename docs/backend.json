@@ -47,7 +47,12 @@
             "type": "object",
             "description": "Live session content.",
             "properties": {
-                "title": { "type": "string" }
+                "title": { "type": "string" },
+                "videoUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL of the uploaded live session video."
+                }
             },
             "required": ["title"]
         },

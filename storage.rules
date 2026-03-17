@@ -1,0 +1,19 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow public read access for all files. This is necessary for the
+    // video to be viewable on the public website.
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+
+    // Restrict writes to the 'live-session' folder to only authenticated users.
+    // This assumes your admin user is the only one who will be authenticated.
+    // For higher security, you could check for a specific UID like in the firestore.rules.
+    // e.g., allow write: if request.auth != null && request.auth.uid == 'YOUR_ADMIN_UID';
+    match /live-session/{videoId} {
+      allow write: if request.auth != null;
+    }
+  }
+}
