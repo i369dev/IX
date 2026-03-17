@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from '@/components/ui/toaster';
@@ -6,6 +6,13 @@ import { Toaster } from '@/components/ui/toaster';
 export const metadata: Metadata = {
   title: 'InhaleXheale | Organic Frequencies & Deep Melodies',
   description: 'A minimalist, distraction-free space for calm and focus.',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
