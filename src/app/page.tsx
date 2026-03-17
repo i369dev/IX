@@ -64,8 +64,7 @@ export default function Home() {
 
     useEffect(() => {
         const body = document.body;
-        body.classList.add('main-page-cursor');
-
+        
         gsap.registerPlugin(ScrollTrigger);
 
         const lenis = new Lenis({
@@ -489,7 +488,7 @@ export default function Home() {
                 } else {
                     if(isHoveringShip) {
                         isHoveringShip = false;
-                        if (document.body) document.body.classList.add('main-page-cursor');
+                        if (document.body) body.classList.add('main-page-cursor');
                         gsap.to(cursorFollower, { width: 30, height: 30, backgroundColor: 'transparent', borderColor: 'rgba(255, 255, 255, 0.4)', duration: 0.3 });
                     }
                 }
@@ -614,6 +613,10 @@ export default function Home() {
 
             shipFired = true;
             isLaunching = true;
+            
+            // This is the fix: Remove the problematic touch listener immediately.
+            window.removeEventListener('touchstart', handleTouchStart);
+
             if (document.body) document.body.classList.remove('main-page-cursor');
             gsap.to([cursorDot, cursorFollower], { opacity: 0, duration: 0.2 });
             
@@ -696,7 +699,7 @@ export default function Home() {
                 ease: "power2.inOut",
                 onComplete: () => {
                     if (preloader) preloader.style.display = 'none';
-                    if (document.body) document.body.classList.add('main-page-cursor');
+                    if (document.body) body.classList.add('main-page-cursor');
                     gsap.to([cursorDot, cursorFollower], { opacity: 1, duration: 0.5 }); 
                 }
             }, 3.5);
