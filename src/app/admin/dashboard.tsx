@@ -287,7 +287,7 @@ export default function Dashboard() {
             </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset className="bg-background text-foreground overflow-y-auto">
+        <SidebarInset className="bg-background text-foreground h-screen overflow-y-auto">
           <div className="p-4 sm:p-6 md:p-8">
             <header className="flex items-center mb-8">
               <SidebarTrigger className="md:hidden mr-4" />
