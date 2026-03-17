@@ -1,15 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Login() {
-  const [email, setEmail] = useState('ix@369.com');
-  const [password, setPassword] = useState('i369XixwqO');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const auth = getAuth();
@@ -20,23 +20,11 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // First, try to sign in.
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (signInError: any) {
-      // If the error indicates the user doesn't exist, try to create them.
-      // Firebase v9+ can throw 'auth/invalid-credential' for both wrong password and user not found.
-      // Since credentials are hardcoded and known, we assume this error means the user needs to be created.
-      if (signInError.code === 'auth/invalid-credential' || signInError.code === 'auth/user-not-found') {
-        try {
-          await createUserWithEmailAndPassword(auth, email, password);
-        } catch (signUpError: any) {
-           // If creating the user also fails (e.g., password is too weak, or email already exists but with different credential type)
-          setError(signUpError.message);
-        }
-      } else {
-        // For other sign-in errors (e.g., network issue, user disabled)
-        setError(signInError.message);
-      }
+      // Successful login will be handled by the redirect in `admin/page.tsx`
+    } catch (error: any) {
+      // Provide a generic error message to prevent account enumeration attacks.
+      setError('Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
     }
