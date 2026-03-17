@@ -239,7 +239,7 @@ export default function Dashboard() {
     <SidebarProvider>
         <Sidebar>
           <SidebarHeader>
-             <h2 className="text-lg font-semibold px-2">inhaleexheal admin</h2>
+             <h2 className="text-lg font-semibold px-2">InhaleXheale Admin</h2>
              <SidebarSeparator />
           </SidebarHeader>
           <SidebarContent>
@@ -287,7 +287,7 @@ export default function Dashboard() {
             </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset className="bg-background text-foreground">
+        <SidebarInset className="bg-background text-foreground overflow-y-auto">
           <div className="p-4 sm:p-6 md:p-8">
             <header className="flex items-center mb-8">
               <SidebarTrigger className="md:hidden mr-4" />
