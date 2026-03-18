@@ -82,6 +82,10 @@
                 "text": { "type": "string" }
             },
             "required": ["text"]
+        },
+        "maintenanceMode": {
+            "type": "boolean",
+            "description": "Toggles site maintenance mode. If true, a maintenance page is shown."
         }
       }
     }

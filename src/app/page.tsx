@@ -6,6 +6,7 @@ import { useDoc, useFirestore } from '@/firebase';
 import { useAudio } from '@/hooks/useAudio';
 import { useInteractiveCanvas } from '@/hooks/useInteractiveCanvas';
 import { MuteToggle } from '@/components/MuteToggle';
+import MaintenancePage from '@/components/MaintenancePage';
 
 const defaultContent = {
   hero: {
@@ -42,18 +43,10 @@ const defaultContent = {
   footer: {
     text: '© 2026 InhaleXheale. All rights reserved.',
   },
+  maintenanceMode: false,
 };
 
-export default function Home() {
-    const firestore = useFirestore();
-    const contentRef = useMemo(
-        () => (firestore ? doc(firestore, 'content', 'landingPage') : null),
-        [firestore]
-    );
-    const { data: pageContent } = useDoc(contentRef);
-
-    const content = pageContent || defaultContent;
-
+const MainSite = ({ content }: { content: typeof defaultContent }) => {
     const { isMuted, toggleMute, playInhale, playExhale } = useAudio();
 
     const cursorDotRef = useRef<HTMLDivElement>(null);
@@ -134,7 +127,10 @@ export default function Home() {
                            {content.live.videoUrl ? (
                                 <video 
                                     key={content.live.videoUrl}
-                                    controls 
+                                    loop
+                                    muted
+                                    autoPlay
+                                    playsInline
                                     className="video-placeholder"
                                 >
                                     <source src={content.live.videoUrl} type="video/mp4" />
@@ -166,4 +162,26 @@ export default function Home() {
             </div>
         </>
     );
+}
+
+
+export default function Home() {
+    const firestore = useFirestore();
+    const contentRef = useMemo(
+        () => (firestore ? doc(firestore, 'content', 'landingPage') : null),
+        [firestore]
+    );
+    const { data: pageContent, loading } = useDoc<typeof defaultContent>(contentRef);
+
+    if (loading) {
+        return <div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">Loading...</div>;
+    }
+    
+    const content = pageContent || defaultContent;
+
+    if (content.maintenanceMode) {
+        return <MaintenancePage />;
+    }
+
+    return <MainSite content={content} />;
 }

@@ -14,6 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,7 +22,7 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Clapperboard, Disc, Info, Link, LogOut, Star, Trash, Type, Upload } from 'lucide-react';
+import { Clapperboard, Disc, Info, Link, LogOut, ShieldAlert, Star, Trash, Type, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -39,6 +40,7 @@ import {
   SidebarFooter,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
+import { Switch } from '@/components/ui/switch';
 
 const trackSchema = z.object({
   name: z.string().min(1, 'Track name is required.'),
@@ -75,6 +77,7 @@ const landingPageSchema = z.object({
   footer: z.object({
     text: z.string().min(1, 'Footer text is required.'),
   }),
+  maintenanceMode: z.boolean().optional(),
 });
 
 type LandingPageData = z.infer<typeof landingPageSchema>;
@@ -114,6 +117,7 @@ const defaultValues: LandingPageData = {
   footer: {
     text: '© 2026 InhaleXheale. All rights reserved.',
   },
+  maintenanceMode: false,
 };
 
 export default function Dashboard() {
@@ -156,7 +160,7 @@ export default function Dashboard() {
   }, [contentData, form]);
   
   const handleVideoUpload = async () => {
-    if (!selectedFile || !app) {
+    if (!selectedFile || !app || !contentRef) {
       toast({
         variant: 'destructive',
         title: 'Upload Error',
@@ -164,7 +168,7 @@ export default function Dashboard() {
       });
       return;
     }
-
+  
     const storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
     if (!storageBucket) {
       toast({
@@ -174,14 +178,14 @@ export default function Dashboard() {
       });
       return;
     }
-
+  
     const storage = getStorage(app, `gs://${storageBucket}`);
     const videoStorageRef = storageRef(storage, `live-session/video-${Date.now()}-${selectedFile.name}`);
     const uploadTask = uploadBytesResumable(videoStorageRef, selectedFile);
-
+  
     setIsUploading(true);
     setUploadProgress(0);
-
+  
     uploadTask.on(
       'state_changed',
       (snapshot) => {
@@ -199,13 +203,26 @@ export default function Dashboard() {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          form.setValue('live.videoUrl', downloadURL, { shouldValidate: true });
+          form.setValue('live.videoUrl', downloadURL, { shouldValidate: true, shouldDirty: true });
+          
+          setDoc(contentRef, { live: { videoUrl: downloadURL } }, { merge: true })
+            .then(() => {
+                toast({
+                  title: 'Upload Complete!',
+                  description: 'Video has been uploaded and saved successfully.',
+                });
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                  path: contentRef.path,
+                  operation: 'write',
+                  requestResourceData: { live: { videoUrl: downloadURL } },
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            });
+
           setIsUploading(false);
           setSelectedFile(null);
-          toast({
-            title: 'Upload Complete!',
-            description: 'Video URL has been updated. Remember to save all changes.',
-          });
         });
       }
     );
@@ -272,6 +289,11 @@ export default function Dashboard() {
               <SidebarMenuItem>
                 <SidebarMenuButton onClick={() => setActiveSection('footer')} isActive={activeSection === 'footer'}>
                   <Type /> Footer
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={() => setActiveSection('maintenance')} isActive={activeSection === 'maintenance'}>
+                  <ShieldAlert /> Site Status
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -483,7 +505,7 @@ export default function Dashboard() {
                                   disabled={!selectedFile || isUploading}
                               >
                                   <Upload className="mr-2 h-4 w-4" />
-                                  {isUploading ? 'Uploading...' : 'Upload'}
+                                  {isUploading ? 'Uploading...' : 'Upload & Save Video'}
                               </Button>
                           </div>
                       </div>
@@ -497,7 +519,7 @@ export default function Dashboard() {
                           <div className="space-y-2">
                               <FormLabel>Current Video</FormLabel>
                               <div className="rounded-lg border overflow-hidden bg-background">
-                                  <video src={form.getValues('live.videoUrl')} controls className="w-full aspect-video"></video>
+                                  <video key={form.watch('live.videoUrl')} src={form.getValues('live.videoUrl')} controls muted className="w-full aspect-video"></video>
                               </div>
                           </div>
                       )}
@@ -575,6 +597,38 @@ export default function Dashboard() {
                               <Input {...field} />
                             </FormControl>
                             <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
+
+                {activeSection === 'maintenance' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Maintenance Mode</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="maintenanceMode"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">
+                                Enable Maintenance Mode
+                              </FormLabel>
+                              <FormDescription>
+                                When enabled, visitors will see a maintenance page instead of the main site.
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
                           </FormItem>
                         )}
                       />
