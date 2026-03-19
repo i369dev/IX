@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Clapperboard, Disc, Info, Link, LogOut, ShieldAlert, Star, Trash, Type, Upload } from 'lucide-react';
+import { ArrowDown, ArrowUp, Clapperboard, Disc, Info, Link, LogOut, ShieldAlert, Star, Trash, Type, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -148,7 +148,7 @@ export default function Dashboard() {
     name: 'releases.tracks',
   });
 
-  const { fields: linkFields, append: appendLink, remove: removeLink } = useFieldArray({
+  const { fields: linkFields, append: appendLink, remove: removeLink, swap: swapLink } = useFieldArray({
     control: form.control,
     name: 'connect.links',
   });
@@ -256,7 +256,7 @@ export default function Dashboard() {
     <SidebarProvider>
         <Sidebar>
           <SidebarHeader>
-             <h2 className="text-lg font-semibold px-2">InhaleXheale Admin</h2>
+             <h2 className="text-lg font-semibold px-2">InhaleXhale Admin</h2>
              <SidebarSeparator />
           </SidebarHeader>
           <SidebarContent>
@@ -548,22 +548,65 @@ export default function Dashboard() {
                       />
                       <div>
                         <FormLabel>Social Links</FormLabel>
-                        <div className="space-y-2 mt-2">
+                        <div className="space-y-4 mt-2">
                           {linkFields.map((field, index) => (
-                            <div key={field.id} className="flex items-center gap-2">
-                              <FormField
-                                control={form.control}
-                                name={`connect.links.${index}.icon`}
-                                render={({ field }) => <Input placeholder="Font Awesome Class (e.g. fab fa-spotify)" {...field} />}
-                              />
-                              <FormField
-                                control={form.control}
-                                name={`connect.links.${index}.url`}
-                                render={({ field }) => <Input placeholder="URL" {...field} />}
-                              />
-                              <Button type="button" variant="ghost" size="icon" onClick={() => removeLink(index)}>
-                                <Trash className="h-4 w-4" />
-                              </Button>
+                            <div key={field.id} className="flex items-center gap-2 p-3 border rounded-lg bg-background/50">
+                                <div className="flex flex-col">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7"
+                                      disabled={index === 0}
+                                      onClick={() => swapLink(index, index - 1)}
+                                    >
+                                      <span className="sr-only">Move up</span>
+                                      <ArrowUp className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7"
+                                      disabled={index === linkFields.length - 1}
+                                      onClick={() => swapLink(index, index + 1)}
+                                    >
+                                      <span className="sr-only">Move down</span>
+                                      <ArrowDown className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                                <div className="flex-grow space-y-2">
+                                    <FormField
+                                        control={form.control}
+                                        name={`connect.links.${index}.icon`}
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel className="sr-only">Icon</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="Font Awesome Class (e.g. fab fa-spotify)" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name={`connect.links.${index}.url`}
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel className="sr-only">URL</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="URL" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => removeLink(index)}>
+                                  <Trash className="h-4 w-4" />
+                                  <span className="sr-only">Remove link</span>
+                                </Button>
                             </div>
                           ))}
                         </div>
