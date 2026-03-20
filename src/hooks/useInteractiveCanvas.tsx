@@ -31,6 +31,12 @@ export function useInteractiveCanvas({
     playInhale,
     playExhale
 }: UseInteractiveCanvasProps) {
+    const audioRefs = React.useRef({ playInhale, playExhale });
+    React.useEffect(() => {
+        audioRefs.current = { playInhale, playExhale };
+    }, [playInhale, playExhale]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const body = document.body;
         gsap.registerPlugin(ScrollTrigger);
@@ -336,14 +342,14 @@ export function useInteractiveCanvas({
             if (document.body) document.body.classList.remove('main-page-cursor');
             gsap.to([cursorDot, cursorFollower], { opacity: 0, duration: 0.2 });
             gsap.getTweensOf('.bg-falling-line').forEach(tween => gsap.to(tween, { timeScale: 20, duration: 0.5, ease: "power2.in" }));
-            playInhale();
+            audioRefs.current.playInhale();
             const tl = gsap.timeline();
             tl.to(shipEngineLight, { intensity: 25, distance: 200, duration: 1.0 }, 0)
             .to([flameTop.scale, flameBL.scale, flameBR.scale], { x: 3, y: 3, z: 6, duration: 1.0 }, 0)
             .to(shipGroup.position, { z: -300, ease: "power3.in", duration: 1.5 }, 0)
             .to(shipGroup.scale, { z: 15, x: 0.2, y: 0.2, ease: "power3.in", duration: 1.5 }, 0)
             .to(glowDot, { opacity: 1, scale: 10, duration: 2.0, ease: "power2.in" }, 0.5)
-            .call(playExhale, [], 2.0)
+            .call(audioRefs.current.playExhale, [], 2.0)
             .to(glowDot, { scale: 150, duration: 1.0, ease: "expo.in" }, 2.5)
             .to('.bg-falling-line', { opacity: 0, duration: 0.2, onStart: () => { stopLines = true; } }, 3.3)
             .to(preloaderGrid, { opacity: 0, duration: 0.2 }, 3.3)
@@ -433,6 +439,5 @@ export function useInteractiveCanvas({
             lenis.destroy();
             ScrollTrigger.killAll();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 }
