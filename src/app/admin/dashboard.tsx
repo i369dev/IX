@@ -5,12 +5,10 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { doc, setDoc } from 'firebase/firestore';
-import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { useFirestore, useDoc, useFirebaseApp } from '@/firebase';
+import { useFirestore, useDoc } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Progress } from '@/components/ui/progress';
 import {
   Form,
   FormControl,
@@ -22,7 +20,7 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ArrowDown, ArrowUp, Clapperboard, Disc, Info, Link, LogOut, ShieldAlert, Star, Trash, Type, Upload } from 'lucide-react';
+import { ArrowDown, ArrowUp, Disc, Info, Link, LogOut, ShieldAlert, Star, Trash, Type } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -66,10 +64,6 @@ const landingPageSchema = z.object({
     title: z.string().min(1, 'Releases title is required.'),
     tracks: z.array(trackSchema),
   }),
-  live: z.object({
-    title: z.string().min(1, 'Live session title is required.'),
-    videoUrl: z.string().url().optional().or(z.literal('')),
-  }),
   connect: z.object({
     title: z.string().min(1, 'Connect title is required.'),
     links: z.array(socialLinkSchema),
@@ -101,10 +95,6 @@ const defaultValues: LandingPageData = {
       { name: '4. Exhale', duration: '06:20' },
     ],
   },
-  live: {
-    title: 'Live Session',
-    videoUrl: '',
-  },
   connect: {
     title: 'Judein',
     links: [
@@ -123,14 +113,9 @@ const defaultValues: LandingPageData = {
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState('hero');
   const firestore = useFirestore();
-  const app = useFirebaseApp();
   const { toast } = useToast();
   const auth = getAuth();
   
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
-
   const contentRef = useMemo(
     () => (firestore ? doc(firestore, 'content', 'landingPage') : null),
     [firestore]
@@ -159,75 +144,6 @@ export default function Dashboard() {
     }
   }, [contentData, form]);
   
-  const handleVideoUpload = async () => {
-    if (!selectedFile || !app || !contentRef) {
-      toast({
-        variant: 'destructive',
-        title: 'Upload Error',
-        description: 'Please select a video file to upload.',
-      });
-      return;
-    }
-  
-    const storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-    if (!storageBucket) {
-      toast({
-        variant: 'destructive',
-        title: 'Configuration Error',
-        description: 'Firebase Storage bucket is not defined. Please set NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET in your environment.',
-      });
-      return;
-    }
-  
-    const storage = getStorage(app, `gs://${storageBucket}`);
-    const videoStorageRef = storageRef(storage, `live-session/video-${Date.now()}-${selectedFile.name}`);
-    const uploadTask = uploadBytesResumable(videoStorageRef, selectedFile);
-  
-    setIsUploading(true);
-    setUploadProgress(0);
-  
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setUploadProgress(progress);
-      },
-      (error) => {
-        setIsUploading(false);
-        toast({
-          variant: 'destructive',
-          title: 'Upload Failed',
-          description: error.message,
-        });
-        console.error("Upload error:", error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          form.setValue('live.videoUrl', downloadURL, { shouldValidate: true, shouldDirty: true });
-          
-          setDoc(contentRef, { live: { videoUrl: downloadURL } }, { merge: true })
-            .then(() => {
-                toast({
-                  title: 'Upload Complete!',
-                  description: 'Video has been uploaded and saved successfully.',
-                });
-            })
-            .catch(async (serverError) => {
-                const permissionError = new FirestorePermissionError({
-                  path: contentRef.path,
-                  operation: 'write',
-                  requestResourceData: { live: { videoUrl: downloadURL } },
-                });
-                errorEmitter.emit('permission-error', permissionError);
-            });
-
-          setIsUploading(false);
-          setSelectedFile(null);
-        });
-      }
-    );
-  };
-
   const onSubmit = async (data: LandingPageData) => {
     if (!contentRef) return;
 
@@ -274,11 +190,6 @@ export default function Dashboard() {
               <SidebarMenuItem>
                 <SidebarMenuButton onClick={() => setActiveSection('releases')} isActive={activeSection === 'releases'}>
                   <Disc /> Releases
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => setActiveSection('live')} isActive={activeSection === 'live'}>
-                  <Clapperboard /> Live Session
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -453,76 +364,6 @@ export default function Dashboard() {
                           Add Track
                         </Button>
                       </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {activeSection === 'live' && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Live Session</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <FormField
-                        control={form.control}
-                        name="live.title"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Title</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="live.videoUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Video URL</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="https://example.com/video.mp4" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <div className="space-y-2">
-                          <FormLabel>Upload New Video</FormLabel>
-                          <div className="flex items-center gap-2">
-                              <Input 
-                                  type="file" 
-                                  accept="video/*"
-                                  onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
-                                  className="flex-grow"
-                                  disabled={isUploading}
-                              />
-                              <Button 
-                                  type="button" 
-                                  onClick={handleVideoUpload}
-                                  disabled={!selectedFile || isUploading}
-                              >
-                                  <Upload className="mr-2 h-4 w-4" />
-                                  {isUploading ? 'Uploading...' : 'Upload & Save Video'}
-                              </Button>
-                          </div>
-                      </div>
-                      {isUploading && (
-                          <div className="space-y-2">
-                              <FormLabel>Upload Progress</FormLabel>
-                              <Progress value={uploadProgress} />
-                          </div>
-                      )}
-                      {form.watch('live.videoUrl') && (
-                          <div className="space-y-2">
-                              <FormLabel>Current Video</FormLabel>
-                              <div className="rounded-lg border overflow-hidden bg-background">
-                                  <video key={form.watch('live.videoUrl')} src={form.getValues('live.videoUrl')} controls muted className="w-full aspect-video"></video>
-                              </div>
-                          </div>
-                      )}
                     </CardContent>
                   </Card>
                 )}

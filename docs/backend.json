@@ -43,19 +43,6 @@
           },
           "required": ["title", "tracks"]
         },
-        "live": {
-            "type": "object",
-            "description": "Live session content.",
-            "properties": {
-                "title": { "type": "string" },
-                "videoUrl": {
-                  "type": "string",
-                  "format": "uri",
-                  "description": "URL of the uploaded live session video."
-                }
-            },
-            "required": ["title"]
-        },
         "connect": {
           "type": "object",
           "description": "Connect section content.",

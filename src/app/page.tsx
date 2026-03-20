@@ -27,10 +27,6 @@ const defaultContent = {
       { name: '4. Exhale', duration: '06:20' },
     ],
   },
-  live: {
-    title: 'Live Session',
-    videoUrl: '',
-  },
   connect: {
     title: 'Judein',
     links: [
@@ -115,29 +111,6 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                                 <li key={index} className="track-item"><span>{track.name}</span> <span>{track.duration}</span></li>
                             ))}
                         </ul>
-                    </div>
-                </section>
-
-                <div className="spacer"></div>
-
-                <section>
-                    <div className="breathe-element" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <h2 style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.live.title}</h2>
-                        <div className="video-wrapper">
-                           {content.live.videoUrl ? (
-                                <video 
-                                    key={content.live.videoUrl}
-                                    src={content.live.videoUrl}
-                                    loop
-                                    muted
-                                    autoPlay
-                                    playsInline
-                                    className="video-placeholder"
-                                />
-                            ) : (
-                                <div className="video-placeholder" style={{background: 'radial-gradient(circle at center, var(--surface-color) 0%, var(--bg-color) 100%)'}}></div>
-                            )}
-                        </div>
                     </div>
                 </section>
 
