@@ -127,15 +127,13 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                            {content.live.videoUrl ? (
                                 <video 
                                     key={content.live.videoUrl}
+                                    src={content.live.videoUrl}
                                     loop
                                     muted
                                     autoPlay
                                     playsInline
                                     className="video-placeholder"
-                                >
-                                    <source src={content.live.videoUrl} type="video/mp4" />
-                                    Your browser does not support the video tag.
-                                </video>
+                                />
                             ) : (
                                 <div className="video-placeholder" style={{background: 'radial-gradient(circle at center, var(--surface-color) 0%, var(--bg-color) 100%)'}}></div>
                             )}
