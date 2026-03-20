@@ -5,10 +5,13 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { doc, setDoc } from 'firebase/firestore';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useFirestore, useDoc } from '@/firebase';
+import { getStorage } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
 import {
   Form,
   FormControl,
@@ -20,7 +23,7 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ArrowDown, ArrowUp, Disc, Info, Link, LogOut, ShieldAlert, Star, Trash, Type } from 'lucide-react';
+import { ArrowDown, ArrowUp, Disc, Info, Link, LogOut, ShieldAlert, Star, Trash, Type, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -60,6 +63,10 @@ const landingPageSchema = z.object({
     p1: z.string().min(1, 'First paragraph is required.'),
     p2: z.string().min(1, 'Second paragraph is required.'),
   }),
+  live: z.object({
+    title: z.string().min(1, 'Live session title is required.'),
+    videoUrl: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
+  }),
   releases: z.object({
     title: z.string().min(1, 'Releases title is required.'),
     tracks: z.array(trackSchema),
@@ -85,6 +92,10 @@ const defaultValues: LandingPageData = {
     title: 'Baare Mein',
     p1: 'Breath and sound combined. A journey through organic textures and dark, meditative spaces.',
     p2: 'Every frequency is a breath. Every silence is a void. Heal with the Neon Emerald light.',
+  },
+  live: {
+    title: 'THE RITUAL',
+    videoUrl: '',
   },
   releases: {
     title: 'Naye Releases',
@@ -116,6 +127,20 @@ export default function Dashboard() {
   const { toast } = useToast();
   const auth = getAuth();
   
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  
+  const storage = useMemo(() => {
+    if (!process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET) return null;
+    try {
+        return getStorage(undefined, process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
+    } catch(e) {
+        console.error("Failed to initialize storage", e);
+        return null;
+    }
+  }, []);
+
   const contentRef = useMemo(
     () => (firestore ? doc(firestore, 'content', 'landingPage') : null),
     [firestore]
@@ -143,6 +168,63 @@ export default function Dashboard() {
       form.reset(contentData);
     }
   }, [contentData, form]);
+
+  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!storage) {
+        setUploadError("Firebase Storage is not configured. Please add NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET to your environment variables.");
+        return;
+    }
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadProgress(0);
+    setUploadError(null);
+
+    const storageRef = ref(storage, `live-session`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadProgress(progress);
+        },
+        (error) => {
+            console.error("Upload failed:", error);
+            setUploadError("Video upload failed. Please try again.");
+            setUploading(false);
+        },
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                form.setValue('live.videoUrl', downloadURL, { shouldValidate: true });
+                setUploading(false);
+                toast({
+                    title: 'Upload Complete!',
+                    description: 'The video has been uploaded. Saving...',
+                });
+                
+                if (contentRef) {
+                  setDoc(contentRef, { live: { videoUrl: downloadURL } }, { merge: true })
+                    .then(() => {
+                        toast({
+                            title: 'Video Saved!',
+                            description: 'The live session video has been updated.',
+                        });
+                    })
+                    .catch(async (serverError) => {
+                       const permissionError = new FirestorePermissionError({
+                         path: contentRef.path,
+                         operation: 'write',
+                         requestResourceData: { live: { videoUrl: downloadURL } },
+                       });
+                       errorEmitter.emit('permission-error', permissionError);
+                     });
+                }
+            });
+        }
+    );
+};
   
   const onSubmit = async (data: LandingPageData) => {
     if (!contentRef) return;
@@ -185,6 +267,11 @@ export default function Dashboard() {
               <SidebarMenuItem>
                 <SidebarMenuButton onClick={() => setActiveSection('about')} isActive={activeSection === 'about'}>
                   <Info /> About
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={() => setActiveSection('live')} isActive={activeSection === 'live'}>
+                  <Video /> Live Session
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -310,6 +397,53 @@ export default function Dashboard() {
                           </FormItem>
                         )}
                       />
+                    </CardContent>
+                  </Card>
+                )}
+
+                {activeSection === 'live' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Live Session</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="live.title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Section Title</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormItem>
+                        <FormLabel>Upload New Video</FormLabel>
+                        <FormControl>
+                          <Input type="file" accept="video/*" onChange={handleVideoUpload} disabled={uploading} />
+                        </FormControl>
+                        <FormDescription>Upload a new video. The change will be saved and published immediately.</FormDescription>
+                        {uploading && <Progress value={uploadProgress} className="w-full mt-2" />}
+                        {uploadError && <p className="text-sm font-medium text-destructive mt-2">{uploadError || 'Storage not configured. Add NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET to .env.local'}</p>}
+                      </FormItem>
+                      
+                       {form.watch('live.videoUrl') && (
+                        <FormItem>
+                            <FormLabel>Current Video</FormLabel>
+                            <div className="mt-2 rounded-lg overflow-hidden border">
+                                <video
+                                    key={form.watch('live.videoUrl')}
+                                    src={form.watch('live.videoUrl')}
+                                    controls
+                                    muted
+                                    className="w-full"
+                                />
+                            </div>
+                        </FormItem>
+                      )}
                     </CardContent>
                   </Card>
                 )}

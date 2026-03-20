@@ -24,6 +24,22 @@
           },
           "required": ["title", "p1", "p2"]
         },
+        "live": {
+          "type": "object",
+          "description": "Live session video.",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "videoUrl": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "title"
+          ]
+        },
         "releases": {
           "type": "object",
           "description": "Releases section content.",

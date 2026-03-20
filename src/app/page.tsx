@@ -18,6 +18,10 @@ const defaultContent = {
     p1: 'Breath and sound combined. A journey through organic textures and dark, meditative spaces.',
     p2: 'Every frequency is a breath. Every silence is a void. Heal with the Neon Emerald light.',
   },
+  live: {
+    title: 'THE RITUAL',
+    videoUrl: '',
+  },
   releases: {
     title: 'Naye Releases',
     tracks: [
@@ -98,6 +102,31 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                         <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.about.title}</h2>
                         <p>{content.about.p1}</p>
                         <p>{content.about.p2}</p>
+                    </div>
+                </section>
+                
+                <div className="spacer"></div>
+                
+                <section>
+                    <div className="breathe-element">
+                        <h2 style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.live?.title || 'Live Session'}</h2>
+                        <div className="video-wrapper">
+                            {content.live?.videoUrl ? (
+                                <video
+                                    key={content.live.videoUrl}
+                                    src={content.live.videoUrl}
+                                    className="video-placeholder"
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                ></video>
+                            ) : (
+                                <div className="video-placeholder flex items-center justify-center text-muted-foreground">
+                                    {/* Placeholder content if you want */}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </section>
 
