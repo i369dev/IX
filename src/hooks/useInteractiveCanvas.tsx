@@ -15,6 +15,7 @@ interface UseInteractiveCanvasProps {
     mainContentRef: React.RefObject<HTMLDivElement>;
     preloaderRef: React.RefObject<HTMLDivElement>;
     muteButtonRef: React.RefObject<HTMLDivElement>;
+    enterButtonRef: React.RefObject<HTMLButtonElement>;
     playInhale: () => void;
     playExhale: () => void;
 }
@@ -28,6 +29,7 @@ export function useInteractiveCanvas({
     mainContentRef,
     preloaderRef,
     muteButtonRef,
+    enterButtonRef,
     playInhale,
     playExhale
 }: UseInteractiveCanvasProps) {
@@ -237,6 +239,11 @@ export function useInteractiveCanvas({
         shipGroup.add(hitbox);
         shipGroup.position.set(0, 0, 3);
         scene.add(shipGroup);
+
+        const buttonAnchor = new THREE.Object3D();
+        buttonAnchor.position.y = -3.5;
+        shipGroup.add(buttonAnchor);
+
         function updateShipScale() {
             let scaleFact = Math.min(window.innerWidth / 2400, window.innerHeight / 1600); 
             if(window.innerWidth < 768) scaleFact *= 1.3;
@@ -251,7 +258,18 @@ export function useInteractiveCanvas({
         
         const renderLoop = (time: number) => {
             if (!prefersReducedMotion) lenis.raf(time * 1000);
+
             if (!shipFired) {
+                const enterButton = enterButtonRef.current;
+                if (enterButton) {
+                    const vector = new THREE.Vector3();
+                    buttonAnchor.getWorldPosition(vector);
+                    vector.project(camera);
+                    const x = (vector.x * 0.5 + 0.5) * renderer.domElement.width;
+                    const y = (vector.y * -0.5 + 0.5) * renderer.domElement.height;
+                    enterButton.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+                }
+
                 shipGroup.position.y = Math.sin(time * 2) * 0.15;
                 gsap.to(shipGroup.rotation, { y: -mouseNormX * 0.3, x: mouseNormY * 0.3, duration: 0.5 });
                 reflectionGroup.rotation.z = time * 2;
@@ -260,12 +278,14 @@ export function useInteractiveCanvas({
                 const intersects = raycaster.intersectObject(hitbox);
                 if (intersects.length > 0) {
                     if(!isHoveringShip) {
-                        isHoveringShip = true; document.body.style.cursor = 'pointer';
+                        isHoveringShip = true; 
+                        if (enterButtonRef.current) enterButtonRef.current.style.cursor = 'pointer';
                         gsap.to(cursorFollower, { width: 60, height: 60, backgroundColor: 'rgba(0, 255, 157, 0.2)', borderColor: 'rgba(0, 255, 157, 0.8)', duration: 0.3 });
                     }
                 } else {
                     if(isHoveringShip) {
-                        isHoveringShip = false; body.classList.add('main-page-cursor');
+                        isHoveringShip = false; 
+                        if (enterButtonRef.current) enterButtonRef.current.style.cursor = 'default';
                         gsap.to(cursorFollower, { width: 30, height: 30, backgroundColor: 'transparent', borderColor: 'rgba(255, 255, 255, 0.4)', duration: 0.3 });
                     }
                 }
@@ -327,20 +347,31 @@ export function useInteractiveCanvas({
         const preloader = preloaderRef.current;
         const mainContent = mainContentRef.current;
         const glowDot = glowDotRef.current;
+        const enterButton = enterButtonRef.current;
+        
+        if (enterButton && !prefersReducedMotion) {
+            gsap.to(enterButton, { opacity: 1, duration: 1.5, delay: 0.5, ease: 'power2.out' });
+        }
+
 
         function launchShip() {
             const muteButton = muteButtonRef.current;
             if (!mainContent || !preloader || !glowDot || shipFired) return;
             window.removeEventListener('touchstart', handleTouchStart, { passive: false } as AddEventListenerOptions);
+            if (enterButton) enterButton.removeEventListener('click', launchShip);
+
             shipFired = true;
+
             if (prefersReducedMotion) {
                 showMainContent();
                 if (muteButton) muteButton.style.display = 'none';
+                if (enterButton) enterButton.style.display = 'none';
                 return;
             }
+
             isLaunching = true;
-            if (document.body) document.body.classList.remove('main-page-cursor');
-            gsap.to([cursorDot, cursorFollower], { opacity: 0, duration: 0.2 });
+            body.classList.remove('main-page-cursor');
+            gsap.to([cursorDot, cursorFollower, enterButton], { opacity: 0, duration: 0.2 });
             gsap.getTweensOf('.bg-falling-line').forEach(tween => gsap.to(tween, { timeScale: 20, duration: 0.5, ease: "power2.in" }));
             audioRefs.current.playInhale();
             const tl = gsap.timeline();
@@ -378,14 +409,24 @@ export function useInteractiveCanvas({
             if (!prefersReducedMotion) {
                 initScrollAnimations();
             } else {
-                 // Ensure content is visible and interactive
                 gsap.set(mainContent, { opacity: 1, scale: 1, filter: "blur(0px)" });
                 gsap.set('.breathe-element', { opacity: 1, scale: 1, y: 0 });
             }
         }
+        
+        if (enterButton) {
+            enterButton.addEventListener('click', launchShip);
+        }
 
-        const handleClick = () => { if (isHoveringShip && !shipFired) launchShip(); };
-        window.addEventListener('click', handleClick);
+        const handleWindowClick = (e: MouseEvent) => {
+            if (isHoveringShip && !shipFired) {
+                // Prevent click on enterButton from also triggering this
+                if(e.target !== enterButton) {
+                    launchShip();
+                }
+            }
+        };
+        window.addEventListener('click', handleWindowClick);
 
         const handleTouchStart = (e: TouchEvent) => {
             if (shipFired) {
@@ -393,9 +434,8 @@ export function useInteractiveCanvas({
                 return;
             };
 
-            if (e.touches.length > 1) {
-                return; // Ignore multi-touch gestures like pinch-zoom
-            }
+            if (e.touches.length > 1) return;
+            if (e.target === enterButton) return;
         
             const touchX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
             const touchY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
@@ -432,8 +472,9 @@ export function useInteractiveCanvas({
             body.classList.remove('main-page-cursor');
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('resize', handleResize);
-            window.removeEventListener('click', handleClick);
+            window.removeEventListener('click', handleWindowClick);
             window.removeEventListener('touchstart', handleTouchStart);
+            if(enterButton) enterButton.removeEventListener('click', launchShip);
             window.removeEventListener('deviceorientation', handleOrientation);
             gsap.ticker.remove(renderLoop);
             lenis.destroy();

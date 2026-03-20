@@ -20,7 +20,7 @@ const defaultContent = {
   },
   live: {
     title: 'THE RITUAL',
-    videoUrl: '',
+    videoUrl: 'https://firebasestorage.googleapis.com/v0/b/studio-8136918750-bbe10.appspot.com/o/live-session%2Fvideo-1773780339032-sxs.mp4?alt=media&token=d1f4b50c-e274-4b8c-b714-915cf2d5e236',
   },
   releases: {
     title: 'Naye Releases',
@@ -57,6 +57,7 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
     const mainContentRef = useRef<HTMLDivElement>(null);
     const preloaderRef = useRef<HTMLDivElement>(null);
     const muteButtonRef = useRef<HTMLDivElement>(null);
+    const enterButtonRef = useRef<HTMLButtonElement>(null);
 
     useInteractiveCanvas({
       canvasRef,
@@ -69,6 +70,7 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
       playInhale,
       playExhale,
       muteButtonRef,
+      enterButtonRef,
     });
 
     return (
@@ -86,6 +88,8 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
             </div>
 
             <canvas id="webgl-canvas" ref={canvasRef}></canvas>
+            
+            <button id="enter-button" ref={enterButtonRef}>ENTER TO BREATHE</button>
 
             <div id="main-content" ref={mainContentRef}>
                 <section className="hero-section">
