@@ -106,6 +106,19 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                 </section>
                 
                 <div className="spacer"></div>
+
+                <section>
+                    <div className="breathe-element" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.releases.title}</h2>
+                        <ul className="track-list">
+                            {content.releases.tracks.map((track, index) => (
+                                <li key={index} className="track-item"><span>{track.name}</span> <span>{track.duration}</span></li>
+                            ))}
+                        </ul>
+                    </div>
+                </section>
+
+                <div className="spacer"></div>
                 
                 <section>
                     <div className="breathe-element">
@@ -127,19 +140,6 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                                 </div>
                             )}
                         </div>
-                    </div>
-                </section>
-
-                <div className="spacer"></div>
-
-                <section>
-                    <div className="breathe-element" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.releases.title}</h2>
-                        <ul className="track-list">
-                            {content.releases.tracks.map((track, index) => (
-                                <li key={index} className="track-item"><span>{track.name}</span> <span>{track.duration}</span></li>
-                            ))}
-                        </ul>
                     </div>
                 </section>
 
