@@ -5,17 +5,27 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 export function useAudio() {
   const [isMuted, setIsMuted] = useState(true);
 
-  const audioCtx = useMemo(() => {
+  const { audioCtx, masterGainNode } = useMemo(() => {
     if (typeof window !== 'undefined') {
       try {
-        return new (window.AudioContext || (window as any).webkitAudioContext)();
+        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const gainNode = context.createGain();
+        gainNode.connect(context.destination);
+        return { audioCtx: context, masterGainNode: gainNode };
       } catch (e) {
         console.error("Web Audio API is not supported in this browser.");
-        return null;
+        return { audioCtx: null, masterGainNode: null };
       }
     }
-    return null;
+    return { audioCtx: null, masterGainNode: null };
   }, []);
+  
+  useEffect(() => {
+      if (masterGainNode && audioCtx) {
+          const targetGain = isMuted ? 0 : 1;
+          masterGainNode.gain.linearRampToValueAtTime(targetGain, audioCtx.currentTime + 0.1);
+      }
+  }, [isMuted, audioCtx, masterGainNode]);
 
   useEffect(() => {
     if (audioCtx && audioCtx.state === "suspended") {
@@ -30,7 +40,7 @@ export function useAudio() {
   }, [audioCtx]);
 
   const playSound = useCallback((type: 'inhale' | 'exhale') => {
-    if (!audioCtx || isMuted) return;
+    if (!audioCtx || !masterGainNode) return;
     if (audioCtx.state === 'suspended') {
       audioCtx.resume();
     }
@@ -56,7 +66,7 @@ export function useAudio() {
 
       noise.connect(filter);
       filter.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(masterGainNode);
       noise.start();
     } else { // exhale
       const osc = audioCtx.createOscillator();
@@ -71,11 +81,11 @@ export function useAudio() {
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 3);
 
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(masterGainNode);
       osc.start();
       osc.stop(audioCtx.currentTime + 3);
     }
-  }, [audioCtx, isMuted]);
+  }, [audioCtx, masterGainNode]);
 
   const playInhale = useCallback(() => playSound('inhale'), [playSound]);
   const playExhale = useCallback(() => playSound('exhale'), [playSound]);
