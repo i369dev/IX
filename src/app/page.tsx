@@ -56,6 +56,7 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mainContentRef = useRef<HTMLDivElement>(null);
     const preloaderRef = useRef<HTMLDivElement>(null);
+    const muteButtonRef = useRef<HTMLDivElement>(null);
 
     useInteractiveCanvas({
       canvasRef,
@@ -67,11 +68,14 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
       preloaderRef,
       playInhale,
       playExhale,
+      muteButtonRef,
     });
 
     return (
         <>
-            <MuteToggle isMuted={isMuted} toggleMute={toggleMute} />
+            <div ref={muteButtonRef}>
+                <MuteToggle isMuted={isMuted} toggleMute={toggleMute} />
+            </div>
             <div className="cursor-dot" ref={cursorDotRef}></div>
             <div className="cursor-follower" ref={cursorFollowerRef}></div>
 
@@ -117,9 +121,9 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                         </ul>
                     </div>
                 </section>
-
-                <div className="spacer"></div>
                 
+                <div className="spacer"></div>
+
                 <section>
                     <div className="breathe-element">
                         <h2 style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.live?.title || 'Live Session'}</h2>

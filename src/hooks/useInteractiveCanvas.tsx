@@ -14,6 +14,7 @@ interface UseInteractiveCanvasProps {
     glowDotRef: React.RefObject<HTMLDivElement>;
     mainContentRef: React.RefObject<HTMLDivElement>;
     preloaderRef: React.RefObject<HTMLDivElement>;
+    muteButtonRef: React.RefObject<HTMLDivElement>;
     playInhale: () => void;
     playExhale: () => void;
 }
@@ -26,6 +27,7 @@ export function useInteractiveCanvas({
     glowDotRef,
     mainContentRef,
     preloaderRef,
+    muteButtonRef,
     playInhale,
     playExhale
 }: UseInteractiveCanvasProps) {
@@ -321,11 +323,13 @@ export function useInteractiveCanvas({
         const glowDot = glowDotRef.current;
 
         function launchShip() {
+            const muteButton = muteButtonRef.current;
             if (!mainContent || !preloader || !glowDot || shipFired) return;
             window.removeEventListener('touchstart', handleTouchStart, { passive: false } as AddEventListenerOptions);
             shipFired = true;
             if (prefersReducedMotion) {
                 showMainContent();
+                if (muteButton) muteButton.style.display = 'none';
                 return;
             }
             isLaunching = true;
@@ -345,7 +349,14 @@ export function useInteractiveCanvas({
             .to(preloaderGrid, { opacity: 0, duration: 0.2 }, 3.3)
             .call(() => { shipGroup.visible = false; if (preloaderGrid) preloaderGrid.style.display = 'none'; }, [], 3.5)
             .add(() => showMainContent(), 3.5)
-            .to(preloader, { opacity: 0, duration: 1.2, ease: "power2.inOut", onComplete: () => { if (preloader) preloader.style.display = 'none'; body.classList.add('main-page-cursor'); gsap.to([cursorDot, cursorFollower], { opacity: 1, duration: 0.5 }); } }, 3.5);
+            .to(preloader, { opacity: 0, duration: 1.2, ease: "power2.inOut", onComplete: () => { if (preloader) preloader.style.display = 'none'; body.classList.add('main-page-cursor'); gsap.to([cursorDot, cursorFollower], { opacity: 1, duration: 0.5 }); } }, 3.5)
+            .to(muteButton, { 
+                opacity: 0, 
+                duration: 0.5, 
+                onComplete: () => { 
+                    if(muteButton) muteButton.style.display = 'none'; 
+                } 
+            }, 3.5);
         }
 
         function showMainContent() {
@@ -422,7 +433,7 @@ export function useInteractiveCanvas({
             lenis.destroy();
             ScrollTrigger.killAll();
         }
-    }, [canvasRef, cursorDotRef, cursorFollowerRef, preloaderGridRef, glowDotRef, mainContentRef, preloaderRef, playInhale, playExhale]);
+    }, [canvasRef, cursorDotRef, cursorFollowerRef, preloaderGridRef, glowDotRef, mainContentRef, preloaderRef, muteButtonRef, playInhale, playExhale]);
 }
 
     
