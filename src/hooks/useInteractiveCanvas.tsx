@@ -433,7 +433,6 @@ export function useInteractiveCanvas({
             lenis.destroy();
             ScrollTrigger.killAll();
         }
-    }, [canvasRef, cursorDotRef, cursorFollowerRef, preloaderGridRef, glowDotRef, mainContentRef, preloaderRef, muteButtonRef, playInhale, playExhale]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 }
-
-    
