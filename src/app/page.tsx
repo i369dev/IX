@@ -115,8 +115,11 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                                 <video
                                     key={content.live.videoUrl}
                                     src={content.live.videoUrl}
-                                    className="w-full h-full"
-                                    controls
+                                    className="w-full h-full object-cover"
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
                                 ></video>
                             ) : (
                                 <div className="video-placeholder flex items-center justify-center text-muted-foreground">
