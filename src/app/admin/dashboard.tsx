@@ -57,36 +57,36 @@ const landingPageSchema = z.object({
   hero: z.object({
     title: z.string().min(1, 'Hero title is required.'),
     subtitle: z.string().min(1, 'Hero subtitle is required.'),
-    titleColor: z.string().optional(),
-    subtitleColor: z.string().optional(),
+    titleColor: z.string().optional().or(z.literal('')),
+    subtitleColor: z.string().optional().or(z.literal('')),
   }),
   about: z.object({
     title: z.string().min(1, 'About title is required.'),
     p1: z.string().min(1, 'First paragraph is required.'),
     p2: z.string().min(1, 'Second paragraph is required.'),
-    titleColor: z.string().optional(),
-    textColor: z.string().optional(),
+    titleColor: z.string().optional().or(z.literal('')),
+    textColor: z.string().optional().or(z.literal('')),
   }),
   live: z.object({
     title: z.string().min(1, 'Live session title is required.'),
     videoUrl: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
-    titleColor: z.string().optional(),
+    titleColor: z.string().optional().or(z.literal('')),
   }),
   releases: z.object({
     title: z.string().min(1, 'Releases title is required.'),
     tracks: z.array(trackSchema),
-    titleColor: z.string().optional(),
-    textColor: z.string().optional(),
+    titleColor: z.string().optional().or(z.literal('')),
+    textColor: z.string().optional().or(z.literal('')),
   }),
   connect: z.object({
     title: z.string().min(1, 'Connect title is required.'),
     links: z.array(socialLinkSchema),
-    titleColor: z.string().optional(),
-    textColor: z.string().optional(),
+    titleColor: z.string().optional().or(z.literal('')),
+    textColor: z.string().optional().or(z.literal('')),
   }),
   footer: z.object({
     text: z.string().min(1, 'Footer text is required.'),
-    textColor: z.string().optional(),
+    textColor: z.string().optional().or(z.literal('')),
   }),
   maintenanceMode: z.boolean().optional(),
 });
@@ -818,3 +818,5 @@ export default function Dashboard() {
     </SidebarProvider>
   );
 }
+
+    
