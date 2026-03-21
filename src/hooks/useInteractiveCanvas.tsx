@@ -264,14 +264,20 @@ export function useInteractiveCanvas({
         
         function updateButtonAndShipScale() {
             const scale = Math.min(window.innerWidth / 1200, 1.0);
-            const shipScale = Math.max(0.3, scale * 0.9);
+            const isMobile = window.innerWidth < 768;
+            
+            const shipScale = isMobile ? 0.4 : scale * 0.9;
             shipGroup.scale.set(shipScale, shipScale, shipScale);
-            buttonAnchor.position.y = -3.2 * Math.max(0.8, scale);
+            
+            const yOffset = isMobile ? -3.2 : -3.2 * Math.max(0.8, scale);
+            buttonAnchor.position.y = yOffset;
 
             if (enterButtonRef.current) {
+                const fontSize = isMobile ? '16px' : `${10 + 4 * scale}px`;
+                const letterSpacing = isMobile ? '4px' : `${2 + 4 * scale}px`;
                 enterButtonRef.current.style.color = '#ffffff';
-                enterButtonRef.current.style.fontSize = `${10 + 4 * scale}px`;
-                enterButtonRef.current.style.letterSpacing = `${2 + 4 * scale}px`;
+                enterButtonRef.current.style.fontSize = fontSize;
+                enterButtonRef.current.style.letterSpacing = letterSpacing;
             }
         }
 
