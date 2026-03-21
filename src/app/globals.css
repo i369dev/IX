@@ -311,11 +311,12 @@ p {
 /* Tupunaka */
 .social-links {
     display: flex;
+    justify-content: center;
     margin-top: 20px;
 }
 .social-links a {
     color: var(--text-muted);
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
     transition: all 0.3s ease;
     text-decoration: none;
 }
@@ -359,3 +360,5 @@ footer {
     50.1% { transform-origin: bottom; }
     100% { transform: scaleY(0); opacity: 0; transform-origin: bottom; }
 }
+
+    
