@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
@@ -53,6 +54,12 @@ export function useInteractiveCanvas({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
+        // Hide the old 2D button from page.tsx
+        const enterButton = enterButtonRef.current;
+        if (enterButton) {
+            enterButton.style.display = 'none';
+        }
+
         const body = document.body;
         gsap.registerPlugin(ScrollTrigger);
 
@@ -74,11 +81,6 @@ export function useInteractiveCanvas({
         // Uñch'ukiña (Cursor)
         const cursorDot = cursorDotRef.current;
         const cursorFollower = cursorFollowerRef.current;
-        const enterButton = enterButtonRef.current;
-        
-        if (enterButton) {
-            enterButton.style.pointerEvents = 'none';
-        }
         
         if (prefersReducedMotion) {
             if(cursorDot) cursorDot.style.display = 'none';
@@ -160,6 +162,13 @@ export function useInteractiveCanvas({
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const cssRenderer = new CSS3DRenderer();
+        cssRenderer.setSize(window.innerWidth, window.innerHeight);
+        cssRenderer.domElement.style.position = 'absolute';
+        cssRenderer.domElement.style.top = '0px';
+        cssRenderer.domElement.style.pointerEvents = 'none';
+        canvas.parentNode?.insertBefore(cssRenderer.domElement, canvas.nextSibling);
 
         // IX Luraña
         const ixGroup = new THREE.Group();
@@ -260,30 +269,43 @@ export function useInteractiveCanvas({
         shipGroup.position.set(0, 0, 3);
         scene.add(shipGroup);
 
-        const buttonAnchor = new THREE.Object3D();
+        // 1. Create HTML Element
+        const textElement = document.createElement('div');
+        textElement.id = 'enter-text-3d';
+        textElement.textContent = 'ENTER TO BREATHE';
+        textElement.style.color = '#ffffff';
+        textElement.style.fontSize = '40px';
+        textElement.style.letterSpacing = '8px';
+        textElement.style.pointerEvents = 'none'; 
+        textElement.style.whiteSpace = 'nowrap';
+        textElement.style.textAlign = 'center';
+
+        // 2. Create 3D Object
+        const textObject = new CSS3DObject(textElement);
+
+        // 3. Dynamic Scaling & Positioning Function
+        const updateText3D = () => {
+            const isMobile = window.innerWidth < 768;
+            const textScale = isMobile ? 0.1 : Math.min(window.innerWidth / 1200, 1) * 0.15;
+            const yOffset = isMobile ? -160 : -250;
+            
+            textObject.scale.set(textScale, textScale, textScale);
+            textObject.position.set(0, yOffset, 10);
+        };
         
-        function updateButtonAndShipScale() {
+        const updateButtonAndShipScale = () => {
             const scale = Math.min(window.innerWidth / 1200, 1.0);
             const isMobile = window.innerWidth < 768;
             
             const shipScale = isMobile ? 0.4 : scale * 0.9;
             shipGroup.scale.set(shipScale, shipScale, shipScale);
-            
-            const yOffset = isMobile ? -3.2 : -3.2 * Math.max(0.8, scale);
-            buttonAnchor.position.y = yOffset;
-
-            if (enterButtonRef.current) {
-                const fontSize = isMobile ? '16px' : `${10 + 4 * scale}px`;
-                const letterSpacing = isMobile ? '4px' : `${2 + 4 * scale}px`;
-                enterButtonRef.current.style.color = '#ffffff';
-                enterButtonRef.current.style.fontSize = fontSize;
-                enterButtonRef.current.style.letterSpacing = letterSpacing;
-            }
-        }
-
-        shipGroup.add(buttonAnchor);
+        };
+        
+        // 4. Initial call and Append
+        updateText3D();
         updateButtonAndShipScale();
-
+        shipGroup.add(textObject);
+        
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); scene.add(ambientLight);
         const pointLight1 = new THREE.PointLight(0xdcffdc, 3, 50); pointLight1.position.set(-5, 5, 5); scene.add(pointLight1);
         let isExperienceStarted = false; let shipFired = false; let isHoveringShip = false; let isLaunching = false; let stopLines = false;
@@ -291,19 +313,10 @@ export function useInteractiveCanvas({
         lenis.on('scroll', ScrollTrigger.update);
         
         const renderLoop = (time: number) => {
+            time *= 0.001;
             if (!prefersReducedMotion) lenis.raf(time * 1000);
 
             if (!shipFired) {
-                const enterButton = enterButtonRef.current;
-                if (enterButton) {
-                    const vector = new THREE.Vector3();
-                    buttonAnchor.getWorldPosition(vector);
-                    vector.project(camera);
-                    const x = (vector.x * 0.5 + 0.5) * renderer.domElement.width;
-                    const y = (vector.y * -0.5 + 0.5) * renderer.domElement.height;
-                    enterButton.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-                }
-
                 shipGroup.position.y = Math.sin(time * 2) * 0.15;
                 gsap.to(shipGroup.rotation, { y: -mouseNormX * 0.3, x: mouseNormY * 0.3, duration: 0.5 });
                 reflectionGroup.rotation.z = time * 2;
@@ -313,13 +326,13 @@ export function useInteractiveCanvas({
                 if (intersects.length > 0) {
                     if(!isHoveringShip) {
                         isHoveringShip = true; 
-                        if (enterButtonRef.current) enterButtonRef.current.style.cursor = 'pointer';
+                        document.body.style.cursor = 'pointer';
                         gsap.to(cursorFollower, { width: 60, height: 60, backgroundColor: 'rgba(0, 255, 157, 0.2)', borderColor: 'rgba(0, 255, 157, 0.8)', duration: 0.3 });
                     }
                 } else {
                     if(isHoveringShip) {
                         isHoveringShip = false; 
-                        if (enterButtonRef.current) enterButtonRef.current.style.cursor = 'default';
+                        document.body.style.cursor = 'default';
                         gsap.to(cursorFollower, { width: 30, height: 30, backgroundColor: 'transparent', borderColor: 'rgba(255, 255, 255, 0.4)', duration: 0.3 });
                     }
                 }
@@ -333,6 +346,7 @@ export function useInteractiveCanvas({
             if (isExperienceStarted) ixGroup.rotation.y += 0.002;
             ixGroup.rotation.z = Math.sin(time * 0.5) * 0.05;
             renderer.render(scene, camera);
+            cssRenderer.render(scene, camera);
         };
         gsap.ticker.add(renderLoop);
         gsap.ticker.lagSmoothing(0);
@@ -341,7 +355,9 @@ export function useInteractiveCanvas({
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            cssRenderer.setSize(window.innerWidth, window.innerHeight);
             updateButtonAndShipScale();
+            updateText3D();
         };
         window.addEventListener('resize', handleResize);
 
@@ -381,37 +397,31 @@ export function useInteractiveCanvas({
         const preloader = preloaderRef.current;
         const mainContent = mainContentRef.current;
         const glowDot = glowDotRef.current;
-        
-        if (enterButton && !prefersReducedMotion) {
-            gsap.to(enterButton, { opacity: 1, duration: 1.5, delay: 0.5, ease: 'power2.out' });
-        }
-
 
         function launchShip() {
             const muteButton = muteButtonRef.current;
             if (!mainContent || !preloader || !glowDot || shipFired) return;
             window.removeEventListener('touchstart', handleTouchStart, { passive: false } as AddEventListenerOptions);
-            if (enterButton) enterButton.removeEventListener('click', launchShip);
 
             shipFired = true;
 
             if (prefersReducedMotion) {
                 showMainContent();
                 if (muteButton) muteButton.style.display = 'none';
-                if (enterButton) enterButton.style.display = 'none';
                 return;
             }
 
+            const enterText = document.getElementById('enter-text-3d');
             isLaunching = true;
             body.classList.remove('main-page-cursor');
             audioRefs.current.playInhale();
             const tl = gsap.timeline();
-            tl.to([cursorDot, cursorFollower, enterButton], { 
+            
+            if (enterText) tl.to(enterText, { opacity: 0, duration: 0.3, onComplete: () => { enterText.style.display = 'none'; } }, 0);
+            
+            tl.to([cursorDot, cursorFollower], { 
                 opacity: 0, 
                 duration: 0.3, 
-                onComplete: () => { 
-                    if (enterButton) enterButton.style.display = 'none'; 
-                } 
             }, 0);
             tl.to(shipEngineLight, { intensity: 25, distance: 200, duration: 1.0 }, 0)
             .to([flameTop.scale, flameBL.scale, flameBR.scale], { x: 3, y: 3, z: 6, duration: 1.0 }, 0)
@@ -452,16 +462,9 @@ export function useInteractiveCanvas({
             }
         }
         
-        if (enterButton) {
-            enterButton.addEventListener('click', launchShip);
-        }
-
         const handleWindowClick = (e: MouseEvent) => {
             if (isHoveringShip && !shipFired) {
-                // Prevent click on enterButton from also triggering this
-                if(e.target !== enterButton) {
-                    launchShip();
-                }
+                launchShip();
             }
         };
         window.addEventListener('click', handleWindowClick);
@@ -473,7 +476,6 @@ export function useInteractiveCanvas({
             };
 
             if (e.touches.length > 1) return;
-            if (e.target === enterButton) return;
         
             const touchX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
             const touchY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
@@ -491,7 +493,7 @@ export function useInteractiveCanvas({
 
         function initScrollAnimations() {
             gsap.to('.scroll-indicator', { opacity: 0, y: -20, scrollTrigger: { trigger: document.body, start: "top top", end: "top -10%", scrub: true } });
-            gsap.to(ixGroup.rotation, { x: Math.PI * 2, y: Math.PI * 4, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
+            gsap.to(ixGroup.rotation, { x: Math.PI * 2, y: Math.PI * 6, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
             gsap.to(ixGroup.position, { y: 2.5, z: -5, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
             const scaleTl = gsap.timeline({ scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
             scaleTl.to(ixGroup.scale, { x: 0.4, y: 0.4, z: 0.4, ease: "power1.inOut", duration: 1 }).to(ixGroup.scale, { x: 1, y: 1, z: 1, ease: "power1.inOut", duration: 1 });
@@ -508,15 +510,18 @@ export function useInteractiveCanvas({
 
         return () => {
             body.classList.remove('main-page-cursor');
+            document.body.style.cursor = 'default';
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('click', handleWindowClick);
             window.removeEventListener('touchstart', handleTouchStart);
-            if(enterButton) enterButton.removeEventListener('click', launchShip);
             window.removeEventListener('deviceorientation', handleOrientation);
             gsap.ticker.remove(renderLoop);
             lenis.destroy();
             ScrollTrigger.killAll();
+            if (cssRenderer.domElement.parentNode) {
+                cssRenderer.domElement.parentNode.removeChild(cssRenderer.domElement);
+            }
         }
-    }, []);
+    }, [ixLogoColor, playExhale, playInhale, canvasRef, cursorDotRef, cursorFollowerRef, enterButtonRef, glowDotRef, mainContentRef, muteButtonRef, preloaderGridRef, preloaderRef]);
 }
