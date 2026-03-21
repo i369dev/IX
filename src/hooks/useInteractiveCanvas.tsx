@@ -256,14 +256,14 @@ export function useInteractiveCanvas({
                 scaleFact *= 1.3;
                 buttonAnchor.position.y = -2.5; // Positioned higher for mobile
                 if (enterButtonRef.current) {
-                    enterButtonRef.current.style.fontSize = '24px';
-                    enterButtonRef.current.style.letterSpacing = '6px';
+                    enterButtonRef.current.style.fontSize = '16px';
+                    enterButtonRef.current.style.letterSpacing = '4px';
                 }
             } else {
                 buttonAnchor.position.y = -3.2;
                 if (enterButtonRef.current) {
-                    enterButtonRef.current.style.fontSize = '32px';
-                    enterButtonRef.current.style.letterSpacing = '10px';
+                    enterButtonRef.current.style.fontSize = '14px';
+                    enterButtonRef.current.style.letterSpacing = '6px';
                 }
             }
             shipGroup.scale.set(scaleFact, scaleFact, scaleFact);
