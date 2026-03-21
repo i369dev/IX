@@ -249,7 +249,41 @@ export default function Dashboard() {
   const onSubmit = async (data: LandingPageData) => {
     if (!contentRef) return;
 
-    setDoc(contentRef, data, { merge: true })
+    const sanitizedData: LandingPageData = {
+      ...data,
+      hero: {
+        ...data.hero,
+        titleColor: data.hero.titleColor || '',
+        subtitleColor: data.hero.subtitleColor || '',
+      },
+      about: {
+        ...data.about,
+        titleColor: data.about.titleColor || '',
+        textColor: data.about.textColor || '',
+      },
+      live: {
+        ...data.live,
+        videoUrl: data.live.videoUrl || '',
+        titleColor: data.live.titleColor || '',
+      },
+      releases: {
+        ...data.releases,
+        titleColor: data.releases.titleColor || '',
+        textColor: data.releases.textColor || '',
+      },
+      connect: {
+        ...data.connect,
+        titleColor: data.connect.titleColor || '',
+        textColor: data.connect.textColor || '',
+      },
+      footer: {
+        ...data.footer,
+        textColor: data.footer.textColor || '',
+      },
+      maintenanceMode: data.maintenanceMode ?? false,
+    };
+
+    setDoc(contentRef, sanitizedData, { merge: true })
       .then(() => {
         toast({
           title: 'Content Saved!',
@@ -260,7 +294,7 @@ export default function Dashboard() {
         const permissionError = new FirestorePermissionError({
           path: contentRef.path,
           operation: 'write',
-          requestResourceData: data,
+          requestResourceData: sanitizedData,
         });
         errorEmitter.emit('permission-error', permissionError);
       });
