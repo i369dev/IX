@@ -13,15 +13,20 @@ const defaultContent = {
   hero: {
     title: 'InhaleXheale',
     subtitle: 'Organic Frequencies & Deep Melodies',
+    titleColor: '#f0f4f8',
+    subtitleColor: '#8b9bb4',
   },
   about: {
     title: 'Baare Mein',
     p1: 'Breath and sound combined. A journey through organic textures and dark, meditative spaces.',
     p2: 'Every frequency is a breath. Every silence is a void. Heal with the Neon Emerald light.',
+    titleColor: '#f0f4f8',
+    textColor: '#8b9bb4',
   },
   live: {
     title: 'THE RITUAL',
     videoUrl: 'https://firebasestorage.googleapis.com/v0/b/studio-8136918750-bbe10.appspot.com/o/live-session%2Fvideo-1773780339032-sxs.mp4?alt=media&token=d1f4b50c-e274-4b8c-b714-915cf2d5e236',
+    titleColor: '#f0f4f8',
   },
   releases: {
     title: 'Naye Releases',
@@ -31,6 +36,8 @@ const defaultContent = {
       { name: '3. Inhale', duration: '03:30' },
       { name: '4. Exhale', duration: '06:20' },
     ],
+    titleColor: '#f0f4f8',
+    textColor: '#8b9bb4',
   },
   connect: {
     title: 'Judein',
@@ -40,9 +47,12 @@ const defaultContent = {
       { icon: 'fab fa-instagram', url: '#' },
       { icon: 'fab fa-youtube', url: '#' },
     ],
+    titleColor: '#f0f4f8',
+    textColor: '#8b9bb4',
   },
   footer: {
     text: '© 2026 InhaleXheale. All rights reserved.',
+    textColor: '#8b9bb4',
   },
   maintenanceMode: false,
 };
@@ -101,8 +111,8 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
             <div id="main-content" ref={mainContentRef}>
                 <section className="hero-section">
                     <div className="breathe-element hero-content">
-                        <h1 className="hero-title">{content.hero.title}</h1>
-                        <div className="hero-subtitle">{content.hero.subtitle}</div>
+                        <h1 className="hero-title" style={{color: content.hero.titleColor}}>{content.hero.title}</h1>
+                        <div className="hero-subtitle" style={{color: content.hero.subtitleColor}}>{content.hero.subtitle}</div>
                         
                         <div className="scroll-indicator">
                             <div className="scroll-line"></div>
@@ -114,9 +124,9 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
 
                 <section>
                     <div className="breathe-element">
-                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.about.title}</h2>
-                        <p>{content.about.p1}</p>
-                        <p>{content.about.p2}</p>
+                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase', color: content.about.titleColor}}>{content.about.title}</h2>
+                        <p style={{color: content.about.textColor}}>{content.about.p1}</p>
+                        <p style={{color: content.about.textColor}}>{content.about.p2}</p>
                     </div>
                 </section>
                 
@@ -124,10 +134,10 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
 
                 <section>
                     <div className="breathe-element" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.releases.title}</h2>
+                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase', color: content.releases.titleColor}}>{content.releases.title}</h2>
                         <ul className="track-list">
                             {content.releases.tracks.map((track, index) => (
-                                <li key={index} className="track-item"><span>{track.name}</span> <span>{track.duration}</span></li>
+                                <li key={index} className="track-item" style={{color: content.releases.textColor}}><span>{track.name}</span> <span>{track.duration}</span></li>
                             ))}
                         </ul>
                     </div>
@@ -137,7 +147,7 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
 
                 <section>
                     <div className="breathe-element">
-                        <h2 style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.live?.title || 'Live Session'}</h2>
+                        <h2 style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '0.2em', textTransform: 'uppercase', color: content.live?.titleColor}}>{content.live?.title || 'Live Session'}</h2>
                         <div className="video-wrapper">
                             {content.live?.videoUrl ? (
                                 <>
@@ -171,16 +181,16 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                 
                 <section style={{minHeight: '50vh'}}>
                     <div className="breathe-element">
-                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.connect.title}</h2>
+                        <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase', color: content.connect.titleColor}}>{content.connect.title}</h2>
                         <div className="social-links flex items-center gap-4 md:gap-8">
                             {content.connect.links.map((link, index) => (
-                                <a key={index} href={link.url} target="_blank" rel="noopener noreferrer"><i className={link.icon}></i></a>
+                                <a key={index} href={link.url} target="_blank" rel="noopener noreferrer" style={{color: content.connect.textColor}}><i className={link.icon}></i></a>
                             ))}
                         </div>
                     </div>
                 </section>
 
-                <footer>
+                <footer style={{color: content.footer.textColor}}>
                     {content.footer.text}
                 </footer>
             </div>

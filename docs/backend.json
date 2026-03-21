@@ -10,7 +10,9 @@
           "description": "Hero section content.",
           "properties": {
             "title": { "type": "string" },
-            "subtitle": { "type": "string" }
+            "subtitle": { "type": "string" },
+            "titleColor": { "type": "string" },
+            "subtitleColor": { "type": "string" }
           },
           "required": ["title", "subtitle"]
         },
@@ -20,7 +22,9 @@
           "properties": {
             "title": { "type": "string" },
             "p1": { "type": "string" },
-            "p2": { "type": "string" }
+            "p2": { "type": "string" },
+            "titleColor": { "type": "string" },
+            "textColor": { "type": "string" }
           },
           "required": ["title", "p1", "p2"]
         },
@@ -34,7 +38,8 @@
             "videoUrl": {
               "type": "string",
               "format": "uri"
-            }
+            },
+            "titleColor": { "type": "string" }
           },
           "required": [
             "title"
@@ -55,7 +60,9 @@
                 },
                 "required": ["name", "duration"]
               }
-            }
+            },
+            "titleColor": { "type": "string" },
+            "textColor": { "type": "string" }
           },
           "required": ["title", "tracks"]
         },
@@ -74,7 +81,9 @@
                 },
                 "required": ["icon", "url"]
               }
-            }
+            },
+            "titleColor": { "type": "string" },
+            "textColor": { "type": "string" }
           },
           "required": ["title", "links"]
         },
@@ -82,7 +91,8 @@
             "type": "object",
             "description": "Footer content.",
             "properties": {
-                "text": { "type": "string" }
+                "text": { "type": "string" },
+                "textColor": { "type": "string" }
             },
             "required": ["text"]
         },

@@ -57,26 +57,36 @@ const landingPageSchema = z.object({
   hero: z.object({
     title: z.string().min(1, 'Hero title is required.'),
     subtitle: z.string().min(1, 'Hero subtitle is required.'),
+    titleColor: z.string().optional(),
+    subtitleColor: z.string().optional(),
   }),
   about: z.object({
     title: z.string().min(1, 'About title is required.'),
     p1: z.string().min(1, 'First paragraph is required.'),
     p2: z.string().min(1, 'Second paragraph is required.'),
+    titleColor: z.string().optional(),
+    textColor: z.string().optional(),
   }),
   live: z.object({
     title: z.string().min(1, 'Live session title is required.'),
     videoUrl: z.string().url('Must be a valid URL.').optional().or(z.literal('')),
+    titleColor: z.string().optional(),
   }),
   releases: z.object({
     title: z.string().min(1, 'Releases title is required.'),
     tracks: z.array(trackSchema),
+    titleColor: z.string().optional(),
+    textColor: z.string().optional(),
   }),
   connect: z.object({
     title: z.string().min(1, 'Connect title is required.'),
     links: z.array(socialLinkSchema),
+    titleColor: z.string().optional(),
+    textColor: z.string().optional(),
   }),
   footer: z.object({
     text: z.string().min(1, 'Footer text is required.'),
+    textColor: z.string().optional(),
   }),
   maintenanceMode: z.boolean().optional(),
 });
@@ -87,15 +97,20 @@ const defaultValues: LandingPageData = {
   hero: {
     title: 'InhaleXheale',
     subtitle: 'Organic Frequencies & Deep Melodies',
+    titleColor: '#f0f4f8',
+    subtitleColor: '#8b9bb4',
   },
   about: {
     title: 'Baare Mein',
     p1: 'Breath and sound combined. A journey through organic textures and dark, meditative spaces.',
     p2: 'Every frequency is a breath. Every silence is a void. Heal with the Neon Emerald light.',
+    titleColor: '#f0f4f8',
+    textColor: '#8b9bb4',
   },
   live: {
     title: 'THE RITUAL',
     videoUrl: '',
+    titleColor: '#f0f4f8',
   },
   releases: {
     title: 'Naye Releases',
@@ -105,6 +120,8 @@ const defaultValues: LandingPageData = {
       { name: '3. Inhale', duration: '03:30' },
       { name: '4. Exhale', duration: '06:20' },
     ],
+    titleColor: '#f0f4f8',
+    textColor: '#8b9bb4',
   },
   connect: {
     title: 'Judein',
@@ -114,9 +131,12 @@ const defaultValues: LandingPageData = {
       { icon: 'fab fa-instagram', url: '#' },
       { icon: 'fab fa-youtube', url: '#' },
     ],
+    titleColor: '#f0f4f8',
+    textColor: '#8b9bb4',
   },
   footer: {
     text: '© 2026 InhaleXheale. All rights reserved.',
+    textColor: '#8b9bb4',
   },
   maintenanceMode: false,
 };
@@ -348,6 +368,33 @@ export default function Dashboard() {
                           </FormItem>
                         )}
                       />
+                      <Separator />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <FormField control={form.control} name="hero.titleColor" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Title Color</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                                <Input type="text" {...field} value={field.value || ''} placeholder="#f0f4f8" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="hero.subtitleColor" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Subtitle Color</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                                <Input type="text" {...field} value={field.value || ''} placeholder="#8b9bb4" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                      </div>
                     </CardContent>
                   </Card>
                 )}
@@ -397,6 +444,33 @@ export default function Dashboard() {
                           </FormItem>
                         )}
                       />
+                      <Separator />
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <FormField control={form.control} name="about.titleColor" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Title Color</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                                <Input type="text" {...field} value={field.value || ''} placeholder="#f0f4f8" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="about.textColor" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Paragraphs Color</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                                <Input type="text" {...field} value={field.value || ''} placeholder="#8b9bb4" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                      </div>
                     </CardContent>
                   </Card>
                 )}
@@ -444,6 +518,19 @@ export default function Dashboard() {
                             </div>
                         </FormItem>
                       )}
+                      <Separator />
+                      <FormField control={form.control} name="live.titleColor" render={({ field }) => (
+                        <FormItem className="pt-2">
+                          <FormLabel>Title Color</FormLabel>
+                          <FormControl>
+                            <div className="flex items-center gap-2">
+                              <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                              <Input type="text" {...field} value={field.value || ''} placeholder="#f0f4f8" />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
                     </CardContent>
                   </Card>
                 )}
@@ -497,6 +584,33 @@ export default function Dashboard() {
                         >
                           Add Track
                         </Button>
+                      </div>
+                      <Separator />
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <FormField control={form.control} name="releases.titleColor" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Title Color</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                                <Input type="text" {...field} value={field.value || ''} placeholder="#f0f4f8" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="releases.textColor" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Track List Color</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                                <Input type="text" {...field} value={field.value || ''} placeholder="#8b9bb4" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
                       </div>
                     </CardContent>
                   </Card>
@@ -595,6 +709,33 @@ export default function Dashboard() {
                           Add Link
                         </Button>
                       </div>
+                      <Separator />
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <FormField control={form.control} name="connect.titleColor" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Title Color</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                                <Input type="text" {...field} value={field.value || ''} placeholder="#f0f4f8" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="connect.textColor" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Icon Color</FormLabel>
+                            <FormControl>
+                              <div className="flex items-center gap-2">
+                                <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                                <Input type="text" {...field} value={field.value || ''} placeholder="#8b9bb4" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                      </div>
                     </CardContent>
                   </Card>
                 )}
@@ -618,6 +759,19 @@ export default function Dashboard() {
                           </FormItem>
                         )}
                       />
+                      <Separator />
+                      <FormField control={form.control} name="footer.textColor" render={({ field }) => (
+                        <FormItem className="pt-2">
+                          <FormLabel>Text Color</FormLabel>
+                          <FormControl>
+                            <div className="flex items-center gap-2">
+                              <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                              <Input type="text" {...field} value={field.value || ''} placeholder="#8b9bb4" />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
                     </CardContent>
                   </Card>
                 )}
