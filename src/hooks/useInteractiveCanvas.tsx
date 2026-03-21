@@ -244,31 +244,29 @@ export function useInteractiveCanvas({
         buttonAnchor.position.set(0, -3.2, 0);
         shipGroup.add(buttonAnchor);
 
-        function updateShipScale() {
-            const isMobile = window.innerWidth < 768;
-            let scaleFact = Math.min(window.innerWidth / 2400, window.innerHeight / 1600);
-            
+        function updateButtonAndShipScale() {
+            // This function dynamically scales the ship and the "ENTER" button
+            // based on the viewport size to ensure they stay proportional.
+            // A single scaleFactor is calculated from the viewport width.
+            const scaleFactor = Math.min(window.innerWidth / 1600, 1.0);
+
+            // 1. Scale the 3D ship model. The multiplier is tuned for visual balance.
+            const shipScale = Math.max(0.3, scaleFactor * 0.9);
+            shipGroup.scale.set(shipScale, shipScale, shipScale);
+
+            // 2. Position the 3D anchor for the button. It moves closer to the ship on smaller screens.
+            // The position is scaled proportionally with the ship.
+            buttonAnchor.position.y = -3.2 * Math.max(0.8, scaleFactor);
+
+            // 3. Style the 2D HTML button. Its font size and letter spacing scale down with the ship.
             if (enterButtonRef.current) {
                 enterButtonRef.current.style.color = '#ffffff';
+                enterButtonRef.current.style.fontSize = `${10 + 6 * scaleFactor}px`; // Scales from 10px to 16px
+                enterButtonRef.current.style.letterSpacing = `${4 + 2 * scaleFactor}px`; // Scales from 4px to 6px
             }
-
-            if (isMobile) {
-                scaleFact *= 1.3;
-                buttonAnchor.position.y = -2.5; // Positioned higher for mobile
-                if (enterButtonRef.current) {
-                    enterButtonRef.current.style.fontSize = '16px';
-                    enterButtonRef.current.style.letterSpacing = '4px';
-                }
-            } else {
-                buttonAnchor.position.y = -3.2;
-                if (enterButtonRef.current) {
-                    enterButtonRef.current.style.fontSize = '14px';
-                    enterButtonRef.current.style.letterSpacing = '6px';
-                }
-            }
-            shipGroup.scale.set(scaleFact, scaleFact, scaleFact);
         }
-        updateShipScale();
+        updateButtonAndShipScale();
+
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); scene.add(ambientLight);
         const pointLight1 = new THREE.PointLight(0xdcffdc, 3, 50); pointLight1.position.set(-5, 5, 5); scene.add(pointLight1);
         let isExperienceStarted = false; let shipFired = false; let isHoveringShip = false; let isLaunching = false; let stopLines = false;
@@ -326,7 +324,7 @@ export function useInteractiveCanvas({
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            updateShipScale();
+            updateButtonAndShipScale();
         };
         window.addEventListener('resize', handleResize);
 
