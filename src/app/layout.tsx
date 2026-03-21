@@ -4,7 +4,7 @@ import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'InhaleXheale | Organic Frequencies & Deep Melodies',
+  title: 'InhaleXhale | Organic Frequencies & Deep Melodies',
   description: 'A minimalist, distraction-free space for calm and focus.',
   icons: {
     icon: [

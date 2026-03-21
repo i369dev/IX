@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { doc } from 'firebase/firestore';
 import { useDoc, useFirestore } from '@/firebase';
 import { useAudio } from '@/hooks/useAudio';
 import { useInteractiveCanvas } from '@/hooks/useInteractiveCanvas';
 import { MuteToggle } from '@/components/MuteToggle';
 import MaintenancePage from '@/components/MaintenancePage';
+import { Volume2, VolumeX } from 'lucide-react';
 
 const defaultContent = {
   hero: {
@@ -48,6 +49,7 @@ const defaultContent = {
 
 const MainSite = ({ content }: { content: typeof defaultContent }) => {
     const { isMuted, toggleMute, playInhale, playExhale } = useAudio();
+    const [isRitualsVideoMuted, setIsRitualsVideoMuted] = useState(true);
 
     const cursorDotRef = useRef<HTMLDivElement>(null);
     const cursorFollowerRef = useRef<HTMLDivElement>(null);
@@ -58,6 +60,11 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
     const preloaderRef = useRef<HTMLDivElement>(null);
     const muteButtonRef = useRef<HTMLDivElement>(null);
     const enterButtonRef = useRef<HTMLButtonElement>(null);
+
+    const audioRefs = React.useRef({ playInhale, playExhale });
+    React.useEffect(() => {
+        audioRefs.current = { playInhale, playExhale };
+    }, [playInhale, playExhale]);
 
     useInteractiveCanvas({
       canvasRef,
@@ -133,15 +140,24 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                         <h2 style={{fontSize: '2rem', marginBottom: '40px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.live?.title || 'Live Session'}</h2>
                         <div className="video-wrapper">
                             {content.live?.videoUrl ? (
-                                <video
-                                    key={content.live.videoUrl}
-                                    src={content.live.videoUrl}
-                                    className="w-full h-full object-cover"
-                                    autoPlay
-                                    loop
-                                    muted
-                                    playsInline
-                                ></video>
+                                <>
+                                    <video
+                                        key={content.live.videoUrl}
+                                        src={content.live.videoUrl}
+                                        className="w-full h-full object-cover"
+                                        autoPlay
+                                        loop
+                                        muted={isRitualsVideoMuted}
+                                        playsInline
+                                    ></video>
+                                    <button
+                                        onClick={() => setIsRitualsVideoMuted(!isRitualsVideoMuted)}
+                                        className="absolute bottom-4 right-4 z-10 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-sm transition-all"
+                                        aria-label={isRitualsVideoMuted ? "Unmute video" : "Mute video"}
+                                    >
+                                        {isRitualsVideoMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                                    </button>
+                                </>
                             ) : (
                                 <div className="video-placeholder flex items-center justify-center text-muted-foreground">
                                     {/* Placeholder content if you want */}
