@@ -74,6 +74,11 @@ export function useInteractiveCanvas({
         // Uñch'ukiña (Cursor)
         const cursorDot = cursorDotRef.current;
         const cursorFollower = cursorFollowerRef.current;
+        const enterButton = enterButtonRef.current;
+        
+        if (enterButton) {
+            enterButton.style.pointerEvents = 'none';
+        }
         
         if (prefersReducedMotion) {
             if(cursorDot) cursorDot.style.display = 'none';
@@ -370,7 +375,6 @@ export function useInteractiveCanvas({
         const preloader = preloaderRef.current;
         const mainContent = mainContentRef.current;
         const glowDot = glowDotRef.current;
-        const enterButton = enterButtonRef.current;
         
         if (enterButton && !prefersReducedMotion) {
             gsap.to(enterButton, { opacity: 1, duration: 1.5, delay: 0.5, ease: 'power2.out' });
@@ -394,10 +398,15 @@ export function useInteractiveCanvas({
 
             isLaunching = true;
             body.classList.remove('main-page-cursor');
-            gsap.to([cursorDot, cursorFollower, enterButton], { opacity: 0, duration: 0.2 });
-            gsap.getTweensOf('.bg-falling-line').forEach(tween => gsap.to(tween, { timeScale: 20, duration: 0.5, ease: "power2.in" }));
             audioRefs.current.playInhale();
             const tl = gsap.timeline();
+            tl.to([cursorDot, cursorFollower, enterButton], { 
+                opacity: 0, 
+                duration: 0.3, 
+                onComplete: () => { 
+                    if (enterButton) enterButton.style.display = 'none'; 
+                } 
+            }, 0);
             tl.to(shipEngineLight, { intensity: 25, distance: 200, duration: 1.0 }, 0)
             .to([flameTop.scale, flameBL.scale, flameBR.scale], { x: 3, y: 3, z: 6, duration: 1.0 }, 0)
             .to(shipGroup.position, { z: -300, ease: "power3.in", duration: 1.5 }, 0)
@@ -477,7 +486,7 @@ export function useInteractiveCanvas({
         function initScrollAnimations() {
             gsap.to('.scroll-indicator', { opacity: 0, y: -20, scrollTrigger: { trigger: document.body, start: "top top", end: "top -10%", scrub: true } });
             gsap.to(ixGroup.rotation, { x: Math.PI * 2, y: Math.PI * 4, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
-            gsap.to(ixGroup.position, { y: 2, z: -5, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
+            gsap.to(ixGroup.position, { y: 2.5, z: -5, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
             const scaleTl = gsap.timeline({ scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
             scaleTl.to(ixGroup.scale, { x: 0.4, y: 0.4, z: 0.4, ease: "power1.inOut", duration: 1 }).to(ixGroup.scale, { x: 1, y: 1, z: 1, ease: "power1.inOut", duration: 1 });
             gsap.utils.toArray('.breathe-element').forEach(el => {
