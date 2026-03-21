@@ -241,7 +241,7 @@ export function useInteractiveCanvas({
         scene.add(shipGroup);
 
         const buttonAnchor = new THREE.Object3D();
-        buttonAnchor.position.y = -3.5;
+        buttonAnchor.position.set(0, -3.2, 0);
         shipGroup.add(buttonAnchor);
 
         function updateShipScale() {
