@@ -245,14 +245,26 @@ export function useInteractiveCanvas({
         shipGroup.add(buttonAnchor);
 
         function updateShipScale() {
+            const isMobile = window.innerWidth < 768;
             let scaleFact = Math.min(window.innerWidth / 2400, window.innerHeight / 1600);
-            if (window.innerWidth < 768) {
+            
+            if (enterButtonRef.current) {
+                enterButtonRef.current.style.color = '#ffffff';
+            }
+
+            if (isMobile) {
                 scaleFact *= 1.3;
-                buttonAnchor.position.y = -2.8; // Positioned higher for mobile
-                if (enterButtonRef.current) enterButtonRef.current.style.fontSize = "0.7rem";
+                buttonAnchor.position.y = -2.5; // Positioned higher for mobile
+                if (enterButtonRef.current) {
+                    enterButtonRef.current.style.fontSize = '24px';
+                    enterButtonRef.current.style.letterSpacing = '6px';
+                }
             } else {
                 buttonAnchor.position.y = -3.2;
-                if (enterButtonRef.current) enterButtonRef.current.style.fontSize = "1rem";
+                if (enterButtonRef.current) {
+                    enterButtonRef.current.style.fontSize = '32px';
+                    enterButtonRef.current.style.letterSpacing = '10px';
+                }
             }
             shipGroup.scale.set(scaleFact, scaleFact, scaleFact);
         }
