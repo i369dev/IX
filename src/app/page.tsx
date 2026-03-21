@@ -172,7 +172,7 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
                 <section style={{minHeight: '50vh'}}>
                     <div className="breathe-element">
                         <h2 style={{fontSize: '2rem', marginBottom: '20px', letterSpacing: '0.2em', textTransform: 'uppercase'}}>{content.connect.title}</h2>
-                        <div className="social-links">
+                        <div className="social-links flex flex-col md:flex-row items-center gap-6 md:gap-8">
                             {content.connect.links.map((link, index) => (
                                 <a key={index} href={link.url} target="_blank" rel="noopener noreferrer"><i className={link.icon}></i></a>
                             ))}

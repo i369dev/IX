@@ -186,20 +186,20 @@
     pointer-events: auto;
     background: transparent;
     border: none;
-    color: #00aaff;
+    color: #ffffff;
     font-family: 'Syne', sans-serif;
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.2em;
     white-space: nowrap;
-    text-shadow: 0 0 10px rgba(0, 170, 255, 0.7), 0 0 20px rgba(0, 170, 255, 0.5);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5);
     cursor: pointer;
     transition: opacity 0.5s ease;
     will-change: transform;
 }
 
 #enter-button:hover {
-    text-shadow: 0 0 15px rgba(0, 170, 255, 1), 0 0 30px rgba(0, 170, 255, 0.8);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.8);
 }
 
 
@@ -311,9 +311,7 @@ p {
 /* Tupunaka */
 .social-links {
     display: flex;
-    gap: 30px;
     margin-top: 20px;
-    justify-content: center;
 }
 .social-links a {
     color: var(--text-muted);

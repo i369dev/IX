@@ -245,8 +245,15 @@ export function useInteractiveCanvas({
         shipGroup.add(buttonAnchor);
 
         function updateShipScale() {
-            let scaleFact = Math.min(window.innerWidth / 2400, window.innerHeight / 1600); 
-            if(window.innerWidth < 768) scaleFact *= 1.3;
+            let scaleFact = Math.min(window.innerWidth / 2400, window.innerHeight / 1600);
+            if (window.innerWidth < 768) {
+                scaleFact *= 1.3;
+                buttonAnchor.position.y = -2.8; // Positioned higher for mobile
+                if (enterButtonRef.current) enterButtonRef.current.style.fontSize = "0.7rem";
+            } else {
+                buttonAnchor.position.y = -3.2;
+                if (enterButtonRef.current) enterButtonRef.current.style.fontSize = "1rem";
+            }
             shipGroup.scale.set(scaleFact, scaleFact, scaleFact);
         }
         updateShipScale();
