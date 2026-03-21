@@ -15,6 +15,7 @@ const defaultContent = {
     subtitle: 'Organic Frequencies & Deep Melodies',
     titleColor: '#f0f4f8',
     subtitleColor: '#8b9bb4',
+    ixLogoColor: '#22c55e',
   },
   about: {
     title: 'Baare Mein',
@@ -88,6 +89,7 @@ const MainSite = ({ content }: { content: typeof defaultContent }) => {
       playExhale,
       muteButtonRef,
       enterButtonRef,
+      ixLogoColor: content.hero.ixLogoColor,
     });
 
     return (

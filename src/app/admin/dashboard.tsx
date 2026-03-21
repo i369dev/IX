@@ -59,6 +59,7 @@ const landingPageSchema = z.object({
     subtitle: z.string().min(1, 'Hero subtitle is required.'),
     titleColor: z.string().optional().or(z.literal('')),
     subtitleColor: z.string().optional().or(z.literal('')),
+    ixLogoColor: z.string().optional().or(z.literal('')),
   }),
   about: z.object({
     title: z.string().min(1, 'About title is required.'),
@@ -99,6 +100,7 @@ const defaultValues: LandingPageData = {
     subtitle: 'Organic Frequencies & Deep Melodies',
     titleColor: '#f0f4f8',
     subtitleColor: '#8b9bb4',
+    ixLogoColor: '#22c55e',
   },
   about: {
     title: 'Baare Mein',
@@ -255,6 +257,7 @@ export default function Dashboard() {
         ...data.hero,
         titleColor: data.hero.titleColor || '',
         subtitleColor: data.hero.subtitleColor || '',
+        ixLogoColor: data.hero.ixLogoColor || '',
       },
       about: {
         ...data.about,
@@ -429,6 +432,20 @@ export default function Dashboard() {
                           </FormItem>
                         )} />
                       </div>
+                      <Separator />
+                      <FormField control={form.control} name="hero.ixLogoColor" render={({ field }) => (
+                        <FormItem className="pt-2">
+                          <FormLabel>3D Logo Color</FormLabel>
+                          <FormControl>
+                            <div className="flex items-center gap-2">
+                              <Input type="color" {...field} value={field.value || ''} className="w-10 h-10 p-1"/>
+                              <Input type="text" {...field} value={field.value || ''} placeholder="#22c55e" />
+                            </div>
+                          </FormControl>
+                           <FormDescription>Controls the color and neon glow of the 3D logo.</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
                     </CardContent>
                   </Card>
                 )}

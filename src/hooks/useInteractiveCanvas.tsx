@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -18,6 +18,7 @@ interface UseInteractiveCanvasProps {
     enterButtonRef: React.RefObject<HTMLButtonElement>;
     playInhale: () => void;
     playExhale: () => void;
+    ixLogoColor: string;
 }
 
 export function useInteractiveCanvas({
@@ -31,12 +32,24 @@ export function useInteractiveCanvas({
     muteButtonRef,
     enterButtonRef,
     playInhale,
-    playExhale
+    playExhale,
+    ixLogoColor
 }: UseInteractiveCanvasProps) {
     const audioRefs = React.useRef({ playInhale, playExhale });
-    React.useEffect(() => {
+    const edgeMaterialRef = useRef<THREE.MeshPhysicalMaterial>();
+
+    useEffect(() => {
         audioRefs.current = { playInhale, playExhale };
     }, [playInhale, playExhale]);
+
+    useEffect(() => {
+        if (edgeMaterialRef.current && ixLogoColor) {
+            edgeMaterialRef.current.color.set(ixLogoColor);
+            edgeMaterialRef.current.emissive.set(ixLogoColor);
+            edgeMaterialRef.current.emissiveIntensity = 1.0;
+        }
+    }, [ixLogoColor]);
+
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
@@ -146,7 +159,9 @@ export function useInteractiveCanvas({
         // IX Luraña
         const ixGroup = new THREE.Group();
         const faceMaterial = new THREE.MeshPhysicalMaterial({ color: 0x050a05, metalness: 0.8, roughness: 0.1, clearcoat: 1.0, clearcoatRoughness: 0.1 });
-        const edgeMaterial = new THREE.MeshPhysicalMaterial({ color: 0x22c55e, metalness: 0.5, roughness: 0.2, emissive: 0x001100 });
+        const edgeMaterial = new THREE.MeshPhysicalMaterial({ color: 0x22c55e, metalness: 0.5, roughness: 0.2, emissive: 0x22c55e, emissiveIntensity: 1.0 });
+        edgeMaterialRef.current = edgeMaterial;
+
         const boxMaterials = [edgeMaterial, edgeMaterial, edgeMaterial, edgeMaterial, faceMaterial, faceMaterial];
         const iGeometry = new THREE.BoxGeometry(1.6, 6, 1.2);
         const iMesh = new THREE.Mesh(iGeometry, boxMaterials);
