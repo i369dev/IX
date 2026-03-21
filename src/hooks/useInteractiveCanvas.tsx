@@ -241,30 +241,21 @@ export function useInteractiveCanvas({
         scene.add(shipGroup);
 
         const buttonAnchor = new THREE.Object3D();
-        buttonAnchor.position.set(0, -3.2, 0);
-        shipGroup.add(buttonAnchor);
-
+        
         function updateButtonAndShipScale() {
-            // This function dynamically scales the ship and the "ENTER" button
-            // based on the viewport size to ensure they stay proportional.
-            // A single scaleFactor is calculated from the viewport width.
-            const scaleFactor = Math.min(window.innerWidth / 1600, 1.0);
-
-            // 1. Scale the 3D ship model. The multiplier is tuned for visual balance.
-            const shipScale = Math.max(0.3, scaleFactor * 0.9);
+            const scale = Math.min(window.innerWidth / 1200, 1.0);
+            const shipScale = Math.max(0.3, scale * 0.9);
             shipGroup.scale.set(shipScale, shipScale, shipScale);
+            buttonAnchor.position.y = -3.2 * Math.max(0.8, scale);
 
-            // 2. Position the 3D anchor for the button. It moves closer to the ship on smaller screens.
-            // The position is scaled proportionally with the ship.
-            buttonAnchor.position.y = -3.2 * Math.max(0.8, scaleFactor);
-
-            // 3. Style the 2D HTML button. Its font size and letter spacing scale down with the ship.
             if (enterButtonRef.current) {
                 enterButtonRef.current.style.color = '#ffffff';
-                enterButtonRef.current.style.fontSize = `${10 + 6 * scaleFactor}px`; // Scales from 10px to 16px
-                enterButtonRef.current.style.letterSpacing = `${4 + 2 * scaleFactor}px`; // Scales from 4px to 6px
+                enterButtonRef.current.style.fontSize = `${10 + 4 * scale}px`;
+                enterButtonRef.current.style.letterSpacing = `${2 + 4 * scale}px`;
             }
         }
+
+        shipGroup.add(buttonAnchor);
         updateButtonAndShipScale();
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); scene.add(ambientLight);
@@ -471,7 +462,7 @@ export function useInteractiveCanvas({
         function initScrollAnimations() {
             gsap.to('.scroll-indicator', { opacity: 0, y: -20, scrollTrigger: { trigger: document.body, start: "top top", end: "top -10%", scrub: true } });
             gsap.to(ixGroup.rotation, { x: Math.PI * 2, y: Math.PI * 4, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
-            gsap.to(ixGroup.position, { y: 5, z: -5, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
+            gsap.to(ixGroup.position, { y: 2, z: -5, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
             const scaleTl = gsap.timeline({ scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 1 } });
             scaleTl.to(ixGroup.scale, { x: 0.4, y: 0.4, z: 0.4, ease: "power1.inOut", duration: 1 }).to(ixGroup.scale, { x: 1, y: 1, z: 1, ease: "power1.inOut", duration: 1 });
             gsap.utils.toArray('.breathe-element').forEach(el => {
